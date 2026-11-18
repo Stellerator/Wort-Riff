@@ -1,0 +1,15 @@
+{
+  "name": "wortriff",
+  "version": "3.0.0",
+  "description": "Wortriff – Vokabel-Lern-App fürs iPad (Quellcode, Bau und Tests)",
+  "private": true,
+  "scripts": {
+    "bauen": "node bauen.js",
+    "repo": "node repo-bauen.js",
+    "test": "node tests/logik.js"
+  },
+  "devDependencies": {
+    "playwright-core": "^1.64.1",
+    "puppeteer-core": "^25.14.0"
+  }
+}
