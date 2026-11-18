@@ -1,0 +1,3 @@
+Hier liegen die Kartenpakete (ZIP-Dateien aus dem Kartenbau).
+Neue ZIP-Datei hochladen: Die App findet sie beim nächsten Update von selbst.
+Die Datei index.json wird beim Bauen erzeugt (repo-bauen.js) und beschreibt die Pakete.

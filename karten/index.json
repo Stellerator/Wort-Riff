@@ -1,0 +1,81 @@
+{
+  "format": 1,
+  "erstellt": "2026-11-18T19:13:59.785Z",
+  "pakete": [
+    {
+      "datei": "Englisch_Unit01.zip",
+      "bytes": 8994020,
+      "sha": "9dd8bbeb2af1815d14f672af22b04d474d1dfad0",
+      "name": "Englisch · Green Line · Unit 1",
+      "lektionen": [
+        {
+          "key": "E01",
+          "titel": "Unit 1",
+          "sprache": "en",
+          "buch": "Green Line",
+          "karten": 121
+        }
+      ]
+    },
+    {
+      "datei": "Englisch_Verben_Paeckchen2.zip",
+      "bytes": 1147966,
+      "sha": "c9dbf83f04563f5199401e3bfe57717d8d1d7b0c",
+      "name": "Englisch · Green Line · Verben",
+      "lektionen": [
+        {
+          "key": "E02",
+          "titel": "Verben",
+          "sprache": "en",
+          "buch": "Green Line",
+          "karten": 15
+        }
+      ]
+    },
+    {
+      "datei": "Englisch_Vokabeltest_Nr3.zip",
+      "bytes": 7928602,
+      "sha": "3d803db1a686e83d90e2b2a3f106a4859474a101",
+      "name": "Englisch · Green Line · Unit 1",
+      "lektionen": [
+        {
+          "key": "E03",
+          "titel": "Unit 1",
+          "sprache": "en",
+          "buch": "Green Line",
+          "karten": 98
+        }
+      ]
+    },
+    {
+      "datei": "Franzoesisch_Lektion01.zip",
+      "bytes": 6063565,
+      "sha": "4d09ab5e7efb3aca27a18b1b7fadcf61c1c511f9",
+      "name": "Französisch · C’est parti ! · C’est parti !",
+      "lektionen": [
+        {
+          "key": "F01",
+          "titel": "C’est parti !",
+          "sprache": "fr",
+          "buch": "C’est parti !",
+          "karten": 79
+        }
+      ]
+    },
+    {
+      "datei": "Franzoesisch_Lektion02.zip",
+      "bytes": 6187204,
+      "sha": "ac598a4c46ee104135e943412fbe19de566f20ca",
+      "name": "Französisch · À plus! · Unité 1",
+      "lektionen": [
+        {
+          "key": "F02",
+          "titel": "Unité 1",
+          "sprache": "fr",
+          "buch": "À plus!",
+          "karten": 83
+        }
+      ]
+    }
+  ]
+}
