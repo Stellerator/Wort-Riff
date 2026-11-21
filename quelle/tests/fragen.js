@@ -26,7 +26,7 @@ const check = (n, c, e) => { if (c) ok++; else { bad++; console.log('FEHLER:', n
   await ev(`LEBEN.fzNext = 0;`);
   await t.warte(2500);
   check('Ohne gelernte Karten erscheint kein „?“', (await page.$$('.fragezeichen')).length === 0);
-  check('Knopf „Freunde fragen Vokabeln“ ist da (5. runder Knopf)', !!(await page.$('.riffwerk [data-a="riffFragenAn"]')) && (await page.$$('.riffwerk .rw')).length === 5);
+  check('Knopf „Freunde fragen Vokabeln“ ist da (5. runder Knopf)', !!(await page.$('.riffwerk [data-a="riffFragenAn"]')) && (await page.$$('.riffwerk .rw')).length === 6);
 
   // ---------- Karten laden und etwas lernen ----------
   await t.klick('[data-a="nav"][data-v="bibliothek"]');

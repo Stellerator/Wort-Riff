@@ -1,7 +1,7 @@
 /* Wortriff Service Worker – macht die App offline nutzbar. Version und Dateiliste setzt repo-bauen.js ein.
    Neue Fassung: Der neue Service Worker lädt alles vor und wartet, bis die App „Jetzt installieren“ meldet (message 'skip').
    Kartenpakete (karten/) und version.json gehen immer frisch ans Netz. Der Lernstand liegt in IndexedDB und wird hier nie angefasst. */
-const VERSION = 'V04-8c74830';
+const VERSION = 'V04-37892c8';
 const FILES = ["./","index.html","manifest.webmanifest","icon-180.png","icon-192.png","icon-512.png"];
 const CACHE = 'wortriff-' + VERSION;
 

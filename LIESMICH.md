@@ -1,6 +1,6 @@
 # Wortriff
 
-Vokabel-Lern-App fürs iPad: Fassung **V04** (Kennung `8c74830`, Stand 2026-11-21 16:30). Sie läuft im Browser, lässt sich auf den Home-Bildschirm legen und funktioniert danach auch ohne Netz. Updates und neue Kartenpakete holt sie sich von selbst aus diesem Repo.
+Vokabel-Lern-App fürs iPad: Fassung **V04** (Kennung `37892c8`, Stand 2026-11-21 16:56). Sie läuft im Browser, lässt sich auf den Home-Bildschirm legen und funktioniert danach auch ohne Netz. Updates und neue Kartenpakete holt sie sich von selbst aus diesem Repo.
 
 ## Was liegt in dieser ZIP-Datei?
 
@@ -26,7 +26,7 @@ Enthaltene Kartenpakete:
 
 1. Auf GitHub ein neues Repository anlegen, z. B. `wortriff`.
 2. Die ZIP-Datei entpacken und den **Inhalt** ins Repository bringen (nicht den äußeren Ordner: `index.html` muss ganz oben im Repository liegen):
-   - **Im Browser am Rechner:** *Add file → Upload files*, dann alle entpackten Dateien und Ordner in das Fenster ziehen. Ordner ziehen geht nur am Rechner, nicht am iPad. Diese ZIP enthält 87 Dateien (ohne `quelle/` nur 16), die größte ist `karten/Englisch_Unit01.zip (8,6 MB)`. Im Browser nimmt GitHub höchstens 100 Dateien je Upload und 25 MB je Datei an. Wird eine Grenze überschritten, in zwei Uploads teilen: zuerst alles außer `quelle/`, danach `quelle/`.
+   - **Im Browser am Rechner:** *Add file → Upload files*, dann alle entpackten Dateien und Ordner in das Fenster ziehen. Ordner ziehen geht nur am Rechner, nicht am iPad. Diese ZIP enthält 90 Dateien (ohne `quelle/` nur 16), die größte ist `karten/Englisch_Unit01.zip (8,6 MB)`. Im Browser nimmt GitHub höchstens 100 Dateien je Upload und 25 MB je Datei an. Wird eine Grenze überschritten, in zwei Uploads teilen: zuerst alles außer `quelle/`, danach `quelle/`.
    - **Mit GitHub Desktop oder git:** Inhalt in den Ordner des geklonten Repositorys kopieren, *Commit*, *Push*. Dabei gelten diese Grenzen nicht.
 3. *Settings → Pages → Build and deployment*: Branch `main`, Ordner `/ (root)`.
 4. Nach ein bis zwei Minuten ist die App unter `https://<benutzername>.github.io/<repository>/` erreichbar.
@@ -109,6 +109,8 @@ Pakete sind die ZIP-Dateien aus dem Kartenbau (`Englisch_Unit05.zip`, `Franzoesi
 - **Mythen der Tiefe:** Zehn mystische Fabelwesen und Gegenstände mit Leuchten, die es nicht im Riff-Laden gibt. Sehr selten in Muscheln und in großen Paketen, im Album gesammelt und im Riff aufstellbar.
 - **Riff lebendiger:** Die Freunde spielen mit Ball und Sprungreifen, verstecken sich, spielen Fangen, schwimmen hinterher, buddeln im Sand, staunen über Mythen und blinzeln. Ein Tipp ins Wasser lockt sie an. Neue, hochwertigere Effekte: Lichtkegel am Leuchtturm, warmes Laternenlicht, Lichtbahnen, Wasseroberfläche, glasige Blasen und nachts leuchtendes Plankton.
 - **Vokabel-Modus im Riff:** Mit dem Buch-Knopf lässt du dir von den Freunden Vokabeln abfragen. Ein „?“ über einem Freund zeigt, dass er etwas wissen möchte. Perlen gibt es dafür bewusst nur wenige (jede zweite richtige Antwort, höchstens 3 am Tag), damit die Perlen aus den Lektionen ihren Wert behalten; der Lernplan bleibt unberührt. Der Modus ist beim Start immer aus und lässt sich mit dem Knopf oder der grünen Leiste jederzeit abschalten.
+- **Riff im Vollbild:** Ein Knopf im Riff blendet alles andere aus, das Riff füllt den ganzen Bildschirm (zum Beenden: Knopf oder „Vollbild beenden“ oben rechts).
+- **Überraschungen:** Ganz selten (höchstens einmal am Tag) taucht im Riff ein goldener Stern auf. Dahinter steckt ein kleines Geschicklichkeitsspiel von 12 Sekunden (Blasenregen oder goldener Krebs) mit einem kleinen Bonus. Abschalten unter *Ich → Einstellungen → „Überraschungen im Riff“*.
 - **Riff:** Schlafende Tiere schließen nachts die Augen. Ein Schloss-Knopf sperrt die Tiere gegen versehentliches Antippen beim Füttern und Zoomen.
 - **Update:** Wer V03 schon als Web-App nutzt, bekommt V04 beim nächsten Update-Check von selbst. Lernstand und Karten bleiben erhalten.
 

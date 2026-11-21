@@ -249,6 +249,7 @@ function pruefeAbzeichen(u) {
     selten: figIds().some(i => FIG[i].rar === 1 && u.owned[i]), legende: figIds().some(i => FIG[i].rar === 3 && u.owned[i]),
     evo1: Object.values(u.owned).some(o => o.stern >= 3), evo3: Object.values(u.owned).some(o => o.stern >= 5),
     zuhause1: riffWohl(u).length >= 1, zuhause5: riffWohl(u).length >= 5, futter1: (u.stats.futter || 0) >= 1,
+    ereignis1: (st.ereignisse || 0) >= 1, ereignis3: (st.ereignis3 || 0) >= 1,
     fragen1: (st.riffFragen || 0) >= 1, fragen50: (st.riffFragen || 0) >= 50, fragen250: (st.riffFragen || 0) >= 250,
     probe1: (st.proben || 0) >= 1, probe5: (st.proben || 0) >= 5, paket1: (st.pakete || 0) >= 1,
     mythos1: mythZahl(u) >= 1, mythos5: mythZahl(u) >= 5, mythosalle: mythZahl(u) >= mythIds().length,

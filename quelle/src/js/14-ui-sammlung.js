@@ -198,7 +198,7 @@ const RIFFHG = {
 const ZONEHG = [null, '#2F8CC4', '#143E7A', '#0A1F45', '#050B22'];
 const ZONESAND = [null, ['#D9BE8C', '#B39562'], ['#6A6890', '#4A486E'], ['#3B3B63', '#23233F']];   // Sand der untersten Reihe ab Reihe 1
 const ZONEKARTE = ['#7FD6EA', '#2F8CC4', '#143E7A', '#0A1F45'];
-const RIFF = { ratio: 1.6, u: 6, v: 4, alles: false, scroll: null };   // u/v: Pixel je Einheit (1 Einheit = 1 % einer Kachel)
+const RIFF = { ratio: 1.6, u: 6, v: 4, alles: false, scroll: null, voll: false };   // u/v: Pixel je Einheit (1 Einheit = 1 % einer Kachel)
 const lum = h => { const n = parseInt(h.slice(1), 16); return ((n >> 16) & 255) * 0.3 + ((n >> 8) & 255) * 0.59 + (n & 255) * 0.11; };
 function riffWasser(rows, c) {
   if (rows === 1) return `linear-gradient(180deg,${c[0]},${c[1]})`;
@@ -289,7 +289,7 @@ ANSICHT.riff = () => {
   const sterne = bgId === 'nacht' ? `<div class="hg" style="height:${100 / W.rows}%;background-size:${100 / W.cols}% 100%;background-image:radial-gradient(circle at 18% 22%,#fff 0 1.5px,transparent 2px),radial-gradient(circle at 72% 14%,#fff 0 2px,transparent 2.5px),radial-gradient(circle at 44% 32%,#BDF 0 1.5px,transparent 2px),radial-gradient(circle at 88% 40%,#fff 0 1.5px,transparent 2px),radial-gradient(circle at 30% 8%,#fff 0 1px,transparent 1.5px)"></div>` : '';
   const leer = items.length ? '' : `<div class="riffleer" style="left:${riffLeft(0, W)};width:calc(100 * var(--u))">Dein Riff ist noch leer.<br>Tipp unten im Lager auf ein Tier oder ein Stück Deko.</div>`;
   return mitNav(`<div class="riff-seite">${kopfLeiste()}<div class="riffkopf"><h1>Mein Riff</h1><span class="sp1"></span>${gross ? `<button class="btn weiss klein" data-a="riffAlles">${RIFF.alles ? 'Zoomen' : 'Übersicht'}</button>` : ''}<button class="btn blau klein" data-a="riffWeiter">Erweitern</button><button class="btn gold klein" data-a="laden">${PERLE} Riff-Laden</button><button class="btn weiss klein" data-a="riffHg">Hintergrund</button></div>
-    <div class="riffrahmen"><div class="riffwrap ${RIFF.alles ? 'alles' : ''}" id="riffwrap"><div class="riffbuehne ${u.riff.sperre ? 'gesperrt' : ''}" id="buehne" style="--cols:${W.cols};--rows:${W.rows}"><div class="hg" style="background:${riffWasser(W.rows, c)}"></div><div class="strahl"></div><div class="oberflaeche"></div>${sterne}<div class="nachthaut"></div>
+    <div class="riffrahmen">${RIFF.voll ? `<button class="vollzu" data-a="riffVoll" aria-label="Vollbild beenden">${ico('vollzu')}<span>Vollbild beenden</span></button>` : ''}<div class="riffwrap ${RIFF.alles ? 'alles' : ''}" id="riffwrap"><div class="riffbuehne ${u.riff.sperre ? 'gesperrt' : ''}" id="buehne" style="--cols:${W.cols};--rows:${W.rows}"><div class="hg" style="background:${riffWasser(W.rows, c)}"></div><div class="strahl"></div><div class="oberflaeche"></div>${sterne}<div class="nachthaut"></div>
     ${riffZonenHtml(W)}<div class="sand" style="--sand1:${sand[0]};--sand2:${sand[1]}"></div>${items.map(i => riffItemHtml(i, W)).join('')}${leer}<div class="teile" id="teile"></div>
     ${sel ? `<div class="werkzeug" id="werkzeug" style="left:${riffLeft(clamp(riffSicht(sel).x, W.minX + 14, W.minX + W.w - 14), W)};top:${riffTop(werkzeugTop(sel))}"><button data-a="riffKlein" aria-label="Kleiner">−</button><button data-a="riffGross" aria-label="Größer">+</button><button data-a="riffSpiegel" aria-label="Spiegeln">${ico('tausch')}</button><button class="rot" data-a="riffWeg" aria-label="Zurück ins Lager">${ico('muelleimer')}</button></div>` : ''}</div></div>${riffWerkHtml(u)}</div>
     ${lagerHtml(u)}</div>`, 'fest');
@@ -299,7 +299,7 @@ function riffFit() {                                              // Kachel so g
   const W = w.clientWidth, H = w.clientHeight;
   if (W < 50 || H < 50) return;
   const u = cur(), wel = riffWelt(u);
-  RIFF.ratio = clamp(W / H, 1.0, 1.6);
+  RIFF.ratio = clamp(W / H, RIFF.voll ? 0.8 : 1.0, 1.6);              // im Vollbild darf die Kachel hochkant werden, damit das Hochformat gefüllt ist
   const bw = Math.floor(Math.min(W, H * RIFF.ratio));
   let cw = bw - 12, ch = Math.floor(bw / RIFF.ratio) - 12;         // 12 = Rand der Bühne
   const alles = RIFF.alles && wel.cols * wel.rows > 1;
@@ -335,7 +335,7 @@ function riffNach() {
     drag.raf = requestAnimationFrame(lauf);
   };
   b.addEventListener('pointerdown', e => {
-    if (e.target.closest('.werkzeug, .fragezeichen')) return;
+    if (e.target.closest('.werkzeug, .fragezeichen, .ereignisstern')) return;
     const el = e.target.closest('.ritem');
     if (!el) {                                                    // leeres Wasser: Touch scrollt von selbst, mit der Maus ziehen wir die Ansicht
       if (LEBEN.futterModus) { lebenFutterStreuen(pos(e)); return; }
@@ -372,11 +372,34 @@ function riffNach() {
   b.addEventListener('pointerup', ende); b.addEventListener('pointercancel', ende);
   b.addEventListener('click', e => {                              // Klick ins leere Wasser: Auswahl aufheben (ein Scrollen mit dem Finger löst keinen Klick aus)
     if (nachKlick) { nachKlick = false; return; }
-    if (!e.target.closest('.ritem, .werkzeug, .fragezeichen') && !LEBEN.futterModus && !V.p.sel) lebenLocken(pos(e));      // Tipp ins Wasser: Ringwelle, die nächsten Freunde schauen vorbei
-    if (!e.target.closest('.ritem, .werkzeug, .fragezeichen') && V.p.sel) { V.p.sel = null; render(); }
+    if (!e.target.closest('.ritem, .werkzeug, .fragezeichen, .ereignisstern') && !LEBEN.futterModus && !V.p.sel) lebenLocken(pos(e));      // Tipp ins Wasser: Ringwelle, die nächsten Freunde schauen vorbei
+    if (!e.target.closest('.ritem, .werkzeug, .fragezeichen, .ereignisstern') && V.p.sel) { V.p.sel = null; render(); }
   });
   lebenStart();
 }
+// Vollbild: Navigation, Kopf und Lager verschwinden, das Riff füllt den ganzen Bildschirm (zusätzlich echtes Vollbild des Browsers, wo es das gibt)
+const vollbildEl = () => document.fullscreenElement || document.webkitFullscreenElement || null;
+function riffVollEnde() {                                           // beim Verlassen der Riff-Ansicht
+  if (!RIFF.voll) return;
+  RIFF.voll = false; document.body.classList.remove('riffvoll');
+  try { if (vollbildEl()) (document.exitFullscreen || document.webkitExitFullscreen).call(document); } catch (e) { /* egal */ }
+}
+AKT.riffVoll = () => {
+  RIFF.voll = !RIFF.voll;
+  document.body.classList.toggle('riffvoll', RIFF.voll);
+  try {
+    const el = document.documentElement;
+    if (!navigator.webdriver) {
+      if (RIFF.voll && !vollbildEl()) { const rq = el.requestFullscreen || el.webkitRequestFullscreen; if (rq) { const p = rq.call(el); if (p && p.catch) p.catch(() => {}); } }
+      else if (!RIFF.voll && vollbildEl()) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+    }
+  } catch (e) { /* Vollbild des Browsers nicht möglich: die eigene Vollbild-Ansicht genügt */ }
+  if (V.name === 'riff') render();
+};
+const vollbildGeaendert = () => { if (!vollbildEl() && RIFF.voll && document.body.classList.contains('riffvoll') && RIFF.nativ) { RIFF.voll = false; document.body.classList.remove('riffvoll'); if (V.name === 'riff') render(); } };
+document.addEventListener('fullscreenchange', () => { RIFF.nativ = RIFF.nativ || !!vollbildEl(); vollbildGeaendert(); });
+document.addEventListener('webkitfullscreenchange', () => { RIFF.nativ = RIFF.nativ || !!vollbildEl(); vollbildGeaendert(); });
+document.addEventListener('keydown', ev => { if (ev.key === 'Escape' && RIFF.voll && V.name === 'riff' && !$('.blatt')) AKT.riffVoll(); });
 AKT.riffAlles = () => { RIFF.alles = !RIFF.alles; render(); };
 AKT.riffNimm = el => { const it = riffSetze(el.dataset.k, el.dataset.v); V.p.sel = it.id; TON.spiel('tap'); sichere(); render(); };
 const riffSel = () => { const u = cur(); return u.riff.items.find(i => i.id === V.p.sel); };

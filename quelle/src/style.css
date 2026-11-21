@@ -700,3 +700,53 @@ details.umzug summary{cursor:pointer;font:600 16px Fredoka;color:var(--ocean);pa
 .riffhinweis.modus{top:auto;bottom:14px;left:72px;display:flex;align-items:center;gap:10px;background:#2F8F6B}
 .riffhinweis.modus .ico{width:20px;height:20px}
 .riffhinweis.modus button{border:0;border-radius:10px;background:#fff;color:var(--navy);font:700 14px Fredoka,sans-serif;padding:4px 12px;min-height:32px}
+
+/* ---------- Übungs-Kachel: kompakter Generalprobe-Knopf ---------- */
+.pk .aktion.probezeile{margin-top:8px}
+.pk .aktion.probezeile .btn{flex:none;min-height:34px;padding:5px 13px;font-size:14px;border-radius:12px;gap:6px;box-shadow:0 3px 0 #B5D3E2}
+.pk .aktion.probezeile .btn .ico{width:16px;height:16px}
+
+/* ---------- Riff im Vollbild ---------- */
+body.riffvoll .nav,body.riffvoll .riff-seite .top,body.riffvoll .riffkopf,body.riffvoll .lager{display:none !important}
+body.riffvoll .main{padding:var(--safe-t) 0 var(--safe-b) 0;background:#0A2F4A}
+body.riffvoll .riff-seite{padding:0;height:100%}
+body.riffvoll .riffrahmen{padding:0}
+body.riffvoll .riffbuehne{border-radius:0;border-width:0;box-shadow:none}
+.vollzu{position:absolute;right:12px;top:12px;z-index:9;display:flex;align-items:center;gap:8px;border:3px solid #fff;border-radius:999px;background:rgba(12,43,75,.62);color:#fff;font:600 15px Fredoka,sans-serif;padding:7px 14px 7px 10px;min-height:44px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);box-shadow:0 4px 10px rgba(8,40,80,.25)}
+.vollzu .ico{width:22px;height:22px}
+
+/* ---------- Überraschungs-Ereignis: goldener Stern, Karte, Spiele ---------- */
+.ereignisstern{position:absolute;z-index:9210;transform:translate(-50%,-50%);width:64px;height:64px;padding:0;border:0;background:none;cursor:pointer;animation:ereSchweben 2.2s ease-in-out infinite;filter:drop-shadow(0 0 10px rgba(255,214,70,.95)) drop-shadow(0 0 26px rgba(255,200,60,.7))}
+.ereignisstern svg{width:100%;height:100%;display:block;animation:ereDrehen 6s linear infinite}
+.ereignisstern span{position:absolute;left:50%;top:100%;transform:translateX(-50%);white-space:nowrap;font:700 14px Fredoka,sans-serif;color:#fff;background:var(--navy);border-radius:10px;padding:3px 10px;margin-top:2px}
+@keyframes ereSchweben{0%,100%{translate:0 0}50%{translate:0 -9px}}
+@keyframes ereDrehen{from{rotate:-8deg}50%{rotate:8deg}to{rotate:-8deg}}
+.riffbuehne.ruhe .ereignisstern,.riffbuehne.ruhe .ereignisstern svg{animation:none !important}
+.ereignis{position:absolute;inset:0;z-index:9500;touch-action:none;-webkit-user-select:none;user-select:none;background:radial-gradient(circle at 50% 40%,rgba(255,226,120,.25),rgba(5,25,58,.62) 75%);display:grid;place-items:center;animation:fadeIn .25s;overflow:hidden}
+.ereignis .efeld{position:absolute;inset:0;overflow:hidden}
+.ereignis .ehud{position:absolute;left:0;right:0;top:12px;z-index:3;display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none}
+.ereignis .ezeit{width:min(420px,70%);height:12px;border-radius:8px;background:rgba(255,255,255,.3);overflow:hidden}
+.ereignis .ezeit b{display:block;height:100%;background:linear-gradient(90deg,#FFC83D,#FF9A2B);border-radius:8px}
+.ekarte{position:relative;z-index:4;background:#fff;border:4px solid #FFC83D;border-radius:26px;padding:18px 24px 20px;width:min(480px,92%);text-align:center;box-shadow:0 14px 40px rgba(0,0,0,.35),0 0 40px rgba(255,200,60,.5);animation:ppEin .5s cubic-bezier(.2,1.5,.4,1)}
+.ekarte .ekopf{display:inline-flex;align-items:center;gap:6px;background:#FFF1BF;color:#7A5A00;border-radius:999px;padding:4px 14px;font:700 14px Fredoka,sans-serif}
+.ekarte h2{font:700 32px Fredoka,sans-serif;color:var(--navy);margin:8px 0 6px}
+.ekarte p{font:500 16px/1.35 Inter,sans-serif;color:var(--navy2,#1d3556);margin:0 0 8px}
+.ekarte .ebonus{font:600 17px Fredoka,sans-serif}
+.ekarte .sterne3{display:flex;justify-content:center;gap:6px;margin:4px 0}
+.ekarte .sterne3 span{width:54px;height:54px;display:block}
+.ekarte .sterne3 svg{width:100%;height:100%}
+.ekarte.zaehler{width:150px;height:150px;border-radius:50%;display:grid;place-items:center;padding:0}
+.ekarte.zaehler b{font:700 84px Fredoka,sans-serif;color:var(--navy)}
+.eblase{position:absolute;left:0;top:0;border-radius:50%;touch-action:none;cursor:pointer;will-change:transform}
+.eblase.normal{background:radial-gradient(circle at 30% 26%,rgba(255,255,255,.98) 0 9%,rgba(255,255,255,0) 26%),radial-gradient(circle at 50% 50%,rgba(180,235,255,.35) 50%,rgba(120,210,255,.7) 86%,rgba(255,255,255,.9) 100%);box-shadow:inset 0 0 0 2px rgba(255,255,255,.75),0 0 18px rgba(120,220,255,.75)}
+.eblase.gold{background:radial-gradient(circle at 30% 26%,#fff 0 10%,rgba(255,255,255,0) 28%),radial-gradient(circle at 50% 50%,#FFE27A 40%,#FFB300 92%);box-shadow:inset 0 0 0 2px rgba(255,255,255,.8),0 0 22px rgba(255,200,60,.95)}
+.eblase.igel{background:none;filter:drop-shadow(0 0 8px rgba(190,60,90,.8))}
+.eblase svg{width:100%;height:100%;display:block}
+.eblase.platzt{animation:ereBlub .26s ease-out forwards;pointer-events:none}
+.eblase.aua{animation:ereAua .26s ease-out forwards;pointer-events:none}
+@keyframes ereBlub{to{opacity:0;scale:1.7}}
+@keyframes ereAua{0%{scale:1}40%{scale:1.3;filter:hue-rotate(-40deg) brightness(1.5)}100%{opacity:0;scale:.4}}
+.ekrebs{position:absolute;left:0;top:0;touch-action:none;cursor:pointer;will-change:transform}
+.ekrebs svg{width:100%;height:100%;display:block;filter:drop-shadow(0 0 12px rgba(255,200,60,.95)) drop-shadow(0 6px 6px rgba(0,0,0,.25))}
+.ekrebs.treffer svg{animation:ereTreffer .3s ease-out}
+@keyframes ereTreffer{0%{filter:brightness(1.8) drop-shadow(0 0 20px #fff)}100%{filter:drop-shadow(0 0 12px rgba(255,200,60,.95))}}

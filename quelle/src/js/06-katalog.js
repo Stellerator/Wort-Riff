@@ -181,6 +181,8 @@ const BADGES = {};
   ['fragen1', 'Neugieriger Freund', 'Eine Vokabelfrage eines Freundes im Riff richtig beantwortet.', 0, 'buch'],
   ['fragen50', 'Riff-Schüler', '50 Vokabelfragen der Freunde richtig beantwortet.', 1, 'buch'],
   ['fragen250', 'Vokabel-Flüsterer', '250 Vokabelfragen der Freunde richtig beantwortet.', 2, 'buch'],
+  ['ereignis1', 'Glückspilz', 'Ein Überraschungsspiel im Riff gespielt.', 0, 'stern'],
+  ['ereignis3', 'Riff-Akrobat', 'Ein Überraschungsspiel im Riff mit drei Sternen geschafft.', 2, 'pokal'],
   ['riff10', 'Riff-Baumeister', '10 Stücke im Riff.', 1, 'koralle']
 ].forEach(([id, name, text, tier, glyph]) => { BADGES[id] = { id, name, text, tier, glyph }; });
 

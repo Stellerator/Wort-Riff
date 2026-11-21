@@ -5,6 +5,8 @@ const ICO = {
   karte: '<circle cx="12" cy="12" r="9.2"/><path d="M15.8 8.2l-2.2 5.4-5.4 2.2 2.2-5.4z"/>',
   album: '<path d="M12 21.5L4 11C3 5.5 7 2.5 12 2.5S21 5.5 20 11z"/><path d="M12 21.5V3M8 4l-1.5 14M16 4l1.5 14M4.6 9l3 .1M19.4 9l-3 .1"/>',
   riff: '<path d="M12 21.5V11M12 16.5l-5.5-5.5V6M12 13.5l5.5-5.5V3.5"/><path d="M4 21.5h16"/>',
+  voll: '<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>',
+  vollzu: '<path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/>',
   ich: '<circle cx="12" cy="8" r="4"/><path d="M4 21.5c0-5 4-7.5 8-7.5s8 2.5 8 7.5"/>',
   buch: '<path d="M3.5 5c3-1.2 6-1 8.5 1 2.5-2 5.500-2.200 8.500-1v14c-3-1.200-6-1-8.500 1-2.500-2-5.500-2.200-8.500-1z"/><path d="M12 6v14"/>',
   zu: '<path d="M6 6l12 12M18 6L6 18"/>',
@@ -68,7 +70,7 @@ const imgTag = (key, cls) => `<img ${cls ? `class="${cls}" ` : ''}${IMGURL.get(k
 let V = { name: 'start', p: {} };
 const ANSICHT = {};                                               // name -> () => HTML
 const AKT = {};                                                   // data-a -> Funktion(el, ev)
-function gehe(name, p) { V = { name, p: p || {} }; render(true); }
+function gehe(name, p) { V = { name, p: p || {} }; if (name !== 'riff' && typeof riffVollEnde === 'function') riffVollEnde(); render(true); }
 function render(hoch) {
   const f = ANSICHT[V.name];
   const main = $('.main');

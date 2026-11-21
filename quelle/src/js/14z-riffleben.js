@@ -452,6 +452,7 @@ function lebenTick(ts) {
   LEBEN.ag.forEach((a, id) => { if (!ids.has(id)) LEBEN.ag.delete(id); });
   lebenEmitter(u, dt);
   lebenFrageSchritt(u);
+  lebenEreignisSchritt(u, dt);
   if (LEBEN.rede) lebenRedeZeigen();
   LEBEN.raf = requestAnimationFrame(lebenTick);
 }
@@ -466,6 +467,8 @@ function lebenStart() {                                             // nach jede
   u.riff.items.forEach(it => { if (!lebenBeweglich(it)) return; const a = LEBEN.ag.get(it.id), el = lebenEl(it.id); if (a && el) { a.tx = ''; lebenAnwenden(a, it, el); } });
   lebenRedeZeigen();
   lebenFrageWeg(); LEBEN.fzNext = LEBEN.zeit + 5 + rand() * 8;
+  if (LEBEN.ereToken && b) b.appendChild(LEBEN.ereToken.el);                      // der goldene Stern bleibt beim Neuzeichnen
+  if (EG && !$('#ereignis')) EG = null;
   if (lebenAn(u)) { LEBEN.letzt = 0; LEBEN.raf = requestAnimationFrame(lebenTick); }
 }
 
@@ -478,7 +481,7 @@ AKT.riffFutter = () => { LEBEN.futterModus = !LEBEN.futterModus; if (LEBEN.futte
 // ---------- Knöpfe über dem Wasser ----------
 function riffWerkHtml(u) {
   const an = lebenAn(u), zeit = u.riff.zeit || 'auto';
-  return `<div class="riffwerk"><button class="rw ${LEBEN.futterModus ? 'an' : ''}" data-a="riffFutter" aria-label="Futter streuen">${ico('futter')}</button><button class="rw ${zeit !== 'auto' ? 'an' : ''}" data-a="riffZeit" aria-label="Tag und Nacht">${ico(LEBEN.nacht || zeit === 'nacht' ? 'mond' : 'licht')}${zeit === 'auto' ? '<small>A</small>' : ''}</button><button class="rw ${u.riff.sperre ? 'an' : ''}" data-a="riffSperre" aria-label="Tiere gegen Antippen sperren" aria-pressed="${!!u.riff.sperre}">${ico('schloss')}</button><button class="rw ${frageAn() ? 'an' : ''}" data-a="riffFragenAn" aria-label="Freunde fragen Vokabeln" aria-pressed="${frageAn()}">${ico('buch')}</button><button class="rw ${an ? 'an' : ''}" data-a="riffLeben" aria-label="Leben im Riff">${ico(an ? 'pause' : 'spiel')}</button></div>${LEBEN.futterModus ? '<div class="riffhinweis">Tippe ins Wasser, um Futter zu streuen</div>' : ''}${frageAn(u) ? '<div class="riffhinweis modus">' + ico('buch') + ' Vokabel-Modus an: Freunde fragen Wörter <button data-a="riffFragenAn">Aus</button></div>' : ''}`;
+  return `<div class="riffwerk"><button class="rw ${LEBEN.futterModus ? 'an' : ''}" data-a="riffFutter" aria-label="Futter streuen">${ico('futter')}</button><button class="rw ${zeit !== 'auto' ? 'an' : ''}" data-a="riffZeit" aria-label="Tag und Nacht">${ico(LEBEN.nacht || zeit === 'nacht' ? 'mond' : 'licht')}${zeit === 'auto' ? '<small>A</small>' : ''}</button><button class="rw ${u.riff.sperre ? 'an' : ''}" data-a="riffSperre" aria-label="Tiere gegen Antippen sperren" aria-pressed="${!!u.riff.sperre}">${ico('schloss')}</button><button class="rw ${frageAn() ? 'an' : ''}" data-a="riffFragenAn" aria-label="Freunde fragen Vokabeln" aria-pressed="${frageAn()}">${ico('buch')}</button><button class="rw ${RIFF.voll ? 'an' : ''}" data-a="riffVoll" aria-label="${RIFF.voll ? 'Vollbild beenden' : 'Riff im Vollbild'}">${ico(RIFF.voll ? 'vollzu' : 'voll')}</button><button class="rw ${an ? 'an' : ''}" data-a="riffLeben" aria-label="Leben im Riff">${ico(an ? 'pause' : 'spiel')}</button></div>${LEBEN.futterModus ? '<div class="riffhinweis">Tippe ins Wasser, um Futter zu streuen</div>' : ''}${frageAn(u) ? '<div class="riffhinweis modus">' + ico('buch') + ' Vokabel-Modus an: Freunde fragen Wörter <button data-a="riffFragenAn">Aus</button></div>' : ''}`;
 }
 
 // ---------- Freunde fragen Vokabeln ----------
@@ -506,7 +509,7 @@ function frageKarte(u) {                                           // → { cid,
 }
 function lebenFrageWeg() { if (LEBEN.fz) { if (LEBEN.fz.el) LEBEN.fz.el.remove(); LEBEN.fz = null; } }
 function lebenFrageSchritt(u) {                                    // lässt das „?“ erscheinen, mitwandern und wieder verschwinden
-  const an = frageAn(u) && !LEBEN.nacht && !LEBEN.futterModus && !LEBEN.frage, fz = LEBEN.fz;
+  const an = frageAn(u) && !LEBEN.nacht && !LEBEN.futterModus && !LEBEN.frage && !EG, fz = LEBEN.fz;
   if (fz) {
     const it = u.riff.items.find(i => i.id === fz.id), a = LEBEN.ag.get(fz.id);
     if (!an || !it || !a || a.modus === 'schlafen' || a.modus === 'verstecken' || LEBEN.zeit > fz.bis) { lebenFrageWeg(); LEBEN.fzNext = LEBEN.zeit + 12 + rand() * 12; return; }
@@ -563,7 +566,7 @@ AKT.frageWahl = el => {
       pruefeAbzeichen(u).forEach(b => toast(`Neues Abzeichen: ${BADGES[b].name}`, 'stern', 3200));
     } else meld = 'Richtig! Für heute gibt es keine Perlen mehr, üben darfst du trotzdem.';
   } else { tag.falsch = (tag.falsch || 0) + 1; TON.spiel('schwer'); meld = `Fast! Richtig ist: <b>${md(q.richtig)}</b>`; }
-  sichere();
+  sichere(); perlenAnzeige(u);
   const m = $('#frageMeld'); if (m) m.innerHTML = `${meld}<div class="zeile" style="justify-content:center;margin-top:8px"><button class="btn gruen" data-a="blattZu">Weiter</button></div>`;
   if (t && u.set.sprechen !== 'aus' && (u.set.sprechen || 'auto') === 'auto') SPRECHEN.sag(t.sprechen, t.tts);
 };
