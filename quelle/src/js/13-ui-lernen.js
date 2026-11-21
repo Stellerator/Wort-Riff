@@ -162,13 +162,14 @@ function lernGroesse() {                                          // mit eingebl
 window.addEventListener('resize', () => { if (V.name === 'lernen') lernGroesse(); });
 if (window.visualViewport) { visualViewport.addEventListener('resize', () => { if (V.name === 'lernen') lernGroesse(); }); visualViewport.addEventListener('scroll', () => { if (V.name === 'lernen') lernGroesse(); }); }
 ANSICHT.lernen = () => {
+  if (!LS || !LS.cid) { setTimeout(() => { if (V.name === 'lernen') start(); }, 0); return '<div class="lern"></div>'; }          // keine Runde da (z. B. wird gerade eine neue vorbereitet)
   V.nach = () => { lernGroesse(); const f = $('#tippFeld'); if (f && !LS.antwortet) { try { f.focus(); } catch (e) { /* iPad: erst nach Tipp */ } } };
   const u = cur(), P = u.projects[LS.pid], cid = LS.cid, t = karteText(cid);
   const pl = heutePlan(u, P);
   const proz = LS.gesamt ? LS.fertig / LS.gesamt : 0;
   const mm = u.set.modus || 'karten';
   const modus = t ? `<div class="tabs modus">${[['karten', 'Karten'], ['quiz', 'Quiz'], ['tippen', 'Tippen']].map(([k, n]) => `<button class="${mm === k ? 'an' : ''}" data-a="modus" data-v="${k}">${n}</button>`).join('')}</div>` : '';
-  const tz = pl.ziel ? ring(planGeschafft(pl) / pl.ziel, 54, pl.fertig ? 'var(--gruen)' : 'var(--sp)', `<span class="fred" style="font-size:14px">${planGeschafft(pl)}</span>`, 14) : '';
+  const tz = LS.probe ? '<span class="chip gold">Generalprobe</span>' : pl.ziel ? ring(planGeschafft(pl) / pl.ziel, 54, pl.fertig ? 'var(--gruen)' : 'var(--sp)', `<span class="fred" style="font-size:14px">${planGeschafft(pl)}</span>`, 14) : '';
   const speak = t && SPRECHEN.ok && u.set.sprechen !== 'aus';
   return `<div class="lern sp-${P.sp}"><div class="kopfzeile"><button class="zu" data-a="lernZu" aria-label="Beenden">${ico('zu')}</button>
     <div class="fort"><div class="leiste sp"><b style="width:${Math.max(3, Math.round(proz * 100))}%"></b></div></div>
@@ -201,7 +202,7 @@ function steuerHtml() {
   }
   if (!LS.um) return `<button class="btn blau gross" data-a="umdrehen">${ico('tausch')} Antwort zeigen</button>`;
   const vs = vorschau(u, LS.cid);
-  return `<div class="antw">${ANTWORTEN.map(a => `<button class="${a.farbe}" data-a="antwort" data-v="${a.r}">${a.name}<small>${vs[a.r]}</small></button>`).join('')}</div>`;
+  return `<div class="antw">${ANTWORTEN.map(a => `<button class="${a.farbe}" data-a="antwort" data-v="${a.r}">${a.name}<small>${LS.probe ? '' : vs[a.r]}</small></button>`).join('')}</div>`;
 }
 AKT.umdrehen = () => {
   if (!LS || LS.modus !== 'karten' || LS.um) return;
@@ -252,6 +253,7 @@ AKT.antwort = el => { const r = +el.dataset.v; verbuche(r); LS.weiter(); };
 
 // Eine Antwort verbuchen; setzt LS.weiter (nächste Karte)
 function verbuche(r) {
+  if (LS.probe) { verbucheProbe(r); return; }                       // Generalprobe: nichts im Lernplan verbuchen
   const u = cur(), P = u.projects[LS.pid], cid = LS.cid;
   const res = bewerte(u, cid, r);
   const bel = belohneAntwort(u, r, res);
@@ -278,12 +280,13 @@ function verbuche(r) {
 }
 AKT.lernZu = () => {
   const n = LS.sess.antworten.length;
-  zeigeBlatt(`<h2>${n ? 'Runde beenden?' : 'Zurück zum Hafen?'}</h2><p class="mut" style="margin:10px 0 18px">${n ? 'Alles, was du bis jetzt beantwortet hast, ist gespeichert und zählt für dein Tagesziel.' : 'Es wurde noch nichts verbucht.'}</p>
+  zeigeBlatt(`<h2>${n ? 'Runde beenden?' : 'Zurück zum Hafen?'}</h2><p class="mut" style="margin:10px 0 18px">${n ? (LS.probe ? 'Alles, was du bis jetzt beantwortet hast, kommt in die Auswertung. Dein Lernplan bleibt unverändert.' : 'Alles, was du bis jetzt beantwortet hast, ist gespeichert und zählt für dein Tagesziel.') : 'Es wurde noch nichts verbucht.'}</p>
     <div class="zeile"><button class="btn gruen" data-a="blattZu">Weiter üben</button><span class="sp1"></span><button class="btn weiss" data-a="lernEnde">Beenden</button></div>`, { ohneZu: true });
 };
 AKT.lernEnde = () => { schliesseBlatt(); if (LS.sess.antworten.length) rundeFertig(true); else { LS = null; gehe('start'); } };
 
 function rundeFertig(abbruch) {
+  if (LS.probe) return probeFertig(abbruch);
   const u = cur(), P = u.projects[LS.pid];
   LS.sess.abbruch = !!abbruch;
   const erg = rundeEnde(u, P, LS.sess);

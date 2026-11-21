@@ -11,7 +11,7 @@ const ctx = { console, setTimeout, clearTimeout, Math, Date, JSON, URL, TextDeco
 ctx.globalThis = ctx;
 vm.createContext(ctx);
 // 00–07 laden (reine Logik); jede Datei als eigenes Skript, aber im gleichen Kontext → "const" bleibt zwischen Skripten sichtbar
-fs.readdirSync(dir).filter(f => /^0[0-7]-/.test(f)).sort().forEach(f => vm.runInContext(fs.readFileSync(path.join(dir, f), 'utf8') + '\n;', ctx, { filename: f }));
+fs.readdirSync(dir).filter(f => /^0[0-7][a-z]?-/.test(f)).sort().forEach(f => vm.runInContext(fs.readFileSync(path.join(dir, f), 'utf8') + '\n;', ctx, { filename: f }));
 const run = code => vm.runInContext(code, ctx);
 
 let ok = 0, bad = 0;
@@ -144,7 +144,7 @@ const U = () => run('cur()');
 run(`cur().muscheln = { perl: 200, schatz: 0 }; cur().pity = 0; cur().owned = {}; cur().tiefeMax = 1000;`);
 const rars = [0, 0, 0, 0];
 let pityMax = 0, ohneEpisch = 0, maxOhne = 0;
-for (let i = 0; i < 200; i++) { const m = run('muschelOeffnen(cur())'); rars[m.rar]++; if (m.rar >= 2) ohneEpisch = 0; else { ohneEpisch++; maxOhne = Math.max(maxOhne, ohneEpisch); } }
+for (let i = 0; i < 200; i++) { const m = run('muschelOeffnen(cur())'); if (m.myth) { ohneEpisch = 0; continue; } rars[m.rar]++; if (m.rar >= 2) ohneEpisch = 0; else { ohneEpisch++; maxOhne = Math.max(maxOhne, ohneEpisch); } }
 check('Muscheln: Schutz greift (nie > 10 ohne episch+)', maxOhne < 10, maxOhne);
 check('Muscheln: alle Seltenheiten kommen vor', rars.every(x => x > 0), rars);
 check('Muscheln: Verteilung grob (gewöhnlich häufigste)', rars[0] > rars[1] && rars[1] > rars[3], rars);

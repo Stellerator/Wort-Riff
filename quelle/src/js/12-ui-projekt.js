@@ -110,7 +110,7 @@ function projektDetail(pid) {
       <div class="stat"><b>${P.serie.best}</b><span>${P.dauer ? 'Wochenziele' : 'längste Strömung'}</span></div>
       <div class="stat"><b>${pl.ziel ? planGeschafft(pl) + '/' + pl.ziel : '–'}</b><span>Tagesziel heute</span></div></div>
     <div class="abstand"></div>
-    <div class="zeile w">${lektLeft.length ? `<button class="btn blau klein" data-a="projektLektion" data-v="${P.id}">${ico('plus')} Lektion hinzufügen</button>` : ''}
+    <div class="zeile w"><button class="btn gold klein" data-a="probeNeu" data-v="${P.id}">${ico('stern')} Generalprobe</button>${lektLeft.length ? `<button class="btn blau klein" data-a="projektLektion" data-v="${P.id}">${ico('plus')} Lektion hinzufügen</button>` : ''}
       ${P.dauer ? '' : `<button class="btn weiss klein" data-a="projektTermin" data-v="${P.id}">${ico('kalender')} Termin ändern</button>`}
       <span class="sp1"></span><button class="btn rot klein" data-a="projektWeg" data-v="${P.id}">${ico('muelleimer')} Projekt beenden</button></div></div>`, { breit: 820 });
 }

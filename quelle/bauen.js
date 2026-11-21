@@ -6,7 +6,7 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 
-const VERSION = 'V03';                 // V03 (18.11.2026): Repo/Home-Bildschirm-App mit Update, Karten aus dem Repo, lebendiges Riff
+const VERSION = 'V04';                 // V03 (18.11.2026): Repo/Home-Bildschirm-App, Update, Karten aus dem Repo, lebendiges Riff · V04: Generalprobe, Überraschungspakete, Mythen der Tiefe
 const ROOT = __dirname;
 const SRC = path.join(ROOT, 'src');
 

@@ -93,7 +93,7 @@ function projektKarte(u, P) {
       <div class="zeile"><span>Tauchtiefe: <b>${marke} %</b> · Ziel „${ZZ.name}“</span></div>
       <div class="tiefe"><b style="width:${Math.max(3, marke)}%"></b><i style="left:${clamp(Math.max(3, marke), 3, 97)}%">${TAUCHER}</i></div>
       <div class="zeile"><span>${st.ok} von ${st.n} Karten</span><span class="sp1"></span>${serieChip(P)}</div></div></div>
-    <div class="aktion"><button class="btn sp-farbe gross" data-a="lernStart" data-v="${P.id}" ${st.n ? '' : 'disabled'}>${ico('hafen')} ${label}${!pl.fertig && rest ? ` <small style="font:600 15px Inter;opacity:.9">(${rest} ${rest === 1 ? 'Karte' : 'Karten'})</small>` : ''}</button><button class="btn weiss" data-a="projektDetail" data-v="${P.id}" aria-label="Details">${ico('info')}</button></div></div>`;
+    <div class="aktion"><button class="btn sp-farbe gross" data-a="lernStart" data-v="${P.id}" ${st.n ? '' : 'disabled'}>${ico('hafen')} ${label}${!pl.fertig && rest ? ` <small style="font:600 15px Inter;opacity:.9">(${rest} ${rest === 1 ? 'Karte' : 'Karten'})</small>` : ''}</button><button class="btn weiss" data-a="projektDetail" data-v="${P.id}" aria-label="Details">${ico('info')}</button></div><div class="aktion probezeile"><button class="btn klein weiss" data-a="probeNeu" data-v="${P.id}" ${st.n ? '' : 'disabled'}>${ico('stern')} Generalprobe vor dem Test</button></div></div>`;
 }
 function logbuchKarte(P, u) {
   const e = P.ergebnis || { pct: 0, n: 0 };

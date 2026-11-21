@@ -515,6 +515,8 @@ details.umzug summary{cursor:pointer;font:600 16px Fredoka;color:var(--ocean);pa
 .riffbuehne.nacht .nachthaut{opacity:1}
 .riffbuehne.nacht .strahl{opacity:.2}
 .riffbuehne.nacht .ritem.fig .fx{filter:brightness(.8) saturate(.88)}
+.schlaf .aug .auf,.riffbuehne.ruhe.nacht .ritem .aug .auf{display:none}
+.schlaf .aug .zu,.riffbuehne.ruhe.nacht .ritem .aug .zu{display:inline}
 .riffbuehne .sil.fl{animation:driften 48s ease-in-out infinite alternate}
 @keyframes driften{from{translate:-6% 0}to{translate:14% 3%}}
 /* Stücke mit Bewegung */
@@ -541,12 +543,6 @@ details.umzug summary{cursor:pointer;font:600 16px Fredoka;color:var(--ocean);pa
 @keyframes saeule{0%{transform:translateY(10px) scale(.7);opacity:0}15%{opacity:1}100%{transform:translateY(-26px) scale(1.05);opacity:0}}
 .ritem.deko.d-hoehle .dk .augen{transform-box:fill-box;transform-origin:50% 50%;animation:blinzeln 6s infinite}
 @keyframes blinzeln{0%,90%,100%{transform:scaleY(1)}94%{transform:scaleY(.08)}}
-.ritem.deko.d-laterne::before,.ritem.deko.d-leuchtturm::before{content:"";position:absolute;pointer-events:none}
-.ritem.deko.d-laterne::before{left:50%;top:38%;width:170%;aspect-ratio:1;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(255,230,128,.55),rgba(255,230,128,0) 65%);animation:gluehen 3.4s ease-in-out infinite alternate}
-.ritem.deko.d-leuchtturm::before{left:50%;top:22%;width:420%;aspect-ratio:1;transform:translate(-50%,-50%);background:conic-gradient(from 0deg,rgba(255,240,170,.55) 0 14deg,transparent 14deg 180deg,rgba(255,240,170,.55) 180deg 194deg,transparent 194deg);-webkit-mask:radial-gradient(circle,#000 8%,transparent 62%);mask:radial-gradient(circle,#000 8%,transparent 62%);animation:dreh 7s linear infinite;opacity:.7}
-@keyframes gluehen{from{opacity:.45;transform:translate(-50%,-50%) scale(.92)}to{opacity:1;transform:translate(-50%,-50%) scale(1.08)}}
-.riffbuehne.nacht .ritem.deko.d-laterne::before{opacity:1;width:240%}
-.riffbuehne.nacht .ritem.deko.d-leuchtturm::before{opacity:1}
 .riffbuehne.ruhe .dr,.riffbuehne.ruhe .dk *,.riffbuehne.ruhe .ritem::before,.riffbuehne.ruhe .sil,.riffbuehne.ruhe .fx{animation:none !important}
 /* Teilchen, Futter, Sprechblase */
 .teile{position:absolute;inset:0;pointer-events:none;z-index:9000}
@@ -569,3 +565,138 @@ details.umzug summary{cursor:pointer;font:600 16px Fredoka;color:var(--ocean);pa
 .riffwerk .rw small{position:absolute;right:-3px;bottom:-3px;font:700 11px Fredoka;background:#fff;color:var(--navy);border-radius:8px;padding:0 4px}
 .riffhinweis{position:absolute;left:72px;top:18px;z-index:8;background:var(--navy);color:#fff;font:600 16px Fredoka;border-radius:14px;padding:8px 14px;box-shadow:var(--schatten)}
 .beliebt{margin-top:4px;font-size:12px}
+
+/* ---------- Mythen der Tiefe: mystisches Leuchten ---------- */
+.ritem.myth svg{filter:drop-shadow(0 0 6px var(--mg)) drop-shadow(0 0 16px var(--mg))}
+.riffbuehne.nacht .ritem.myth svg{filter:drop-shadow(0 0 10px var(--mg)) drop-shadow(0 0 30px var(--mg)) brightness(1.12)}
+.ritem.myth:not(.wesen) .dr{animation:schweben 5.5s ease-in-out infinite alternate;animation-delay:var(--dl,0s)}
+.ritem.myth.wesen .dr{animation:bob 3.8s ease-in-out infinite;animation-delay:var(--dl,0s)}
+.rtile.mythtile .b svg{filter:drop-shadow(0 0 6px var(--mg))}
+.figkachel.mythkachel{box-shadow:0 0 0 3px #E8C6FF,0 0 20px var(--mg),0 5px 14px rgba(8,60,100,.15);animation:mythKachel 3.8s ease-in-out infinite;background:linear-gradient(160deg,#fff 0,#F5ECFF 55%,#E6F6FF 100%)}
+.figkachel.mythkachel.zu{box-shadow:none;animation:none;background:rgba(255,255,255,.45)}
+.figkachel.mythkachel .bild svg{filter:drop-shadow(0 0 5px var(--mg))}
+.figkachel.mythkachel.zu .bild svg{filter:none}
+@keyframes mythKachel{0%,100%{box-shadow:0 0 0 3px #E8C6FF,0 0 14px var(--mg),0 5px 14px rgba(8,60,100,.15)}50%{box-shadow:0 0 0 3px #C9A6FF,0 0 30px var(--mg),0 5px 14px rgba(8,60,100,.15)}}
+.mythchip{display:inline-block;background:linear-gradient(90deg,#C46BFF,#6FD6FF);color:#fff;font:700 13px Fredoka,sans-serif;letter-spacing:.5px;border-radius:999px;padding:3px 11px}
+.chip.mythchip{font-size:15px;padding:6px 14px}
+.raritaet.mythraritaet{background:linear-gradient(90deg,#C46BFF,#6FD6FF,#FFD866)}
+.mythfund svg{filter:drop-shadow(0 0 14px var(--mg)) drop-shadow(0 0 40px var(--mg))}
+.mythdetail .gross svg{filter:drop-shadow(0 0 10px var(--mg)) drop-shadow(0 0 28px var(--mg))}
+
+/* ---------- Generalprobe ---------- */
+.probefilter{margin-bottom:8px;gap:8px}
+.probefilter .chip{border:2px solid #D3E6F0;cursor:pointer;font-family:Fredoka,Inter,sans-serif}
+.probefilter .chip.sp{border-color:var(--sp)}
+.probeliste{max-height:42vh;overflow:auto;-webkit-overflow-scrolling:touch;background:#F1F9FC;border-radius:16px;padding:6px;display:flex;flex-direction:column;gap:5px;margin:6px 0}
+.prow{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:12px;border:2px solid #E1EDF4;background:#fff;text-align:left;font:500 15px Inter,sans-serif;color:var(--navy);min-height:48px;width:100%}
+.prow b{font:600 17px Fredoka,sans-serif;flex:1;min-width:0}
+.prow small{color:var(--mut);font-size:13px;white-space:nowrap}
+.prow .pdot{width:12px;height:12px;border-radius:50%;flex:none;border:2px solid rgba(20,37,63,.25)}
+.prow .pbox{width:28px;height:28px;border-radius:9px;border:2px solid #B5D3E2;display:grid;place-items:center;color:transparent;flex:none;background:#fff}
+.prow .pbox .ico{font-size:18px}
+.prow.an{background:#E8F7EF;border-color:#7ACBA3}
+.prow.an .pbox{background:var(--gruen);border-color:var(--gruenD);color:#fff}
+.probefuss{display:flex;flex-direction:column;gap:10px;margin-top:8px}
+.probeinfo{font:500 15px Inter,sans-serif;color:var(--navy)}
+.probeinfo b{font:700 18px Fredoka,sans-serif}
+.probeinfo small{display:block;color:var(--mut);margin-top:2px}
+.paketkarte{display:flex;align-items:center;gap:14px;width:100%;max-width:560px;background:#FFF6D8;border:3px solid #FFC83D;border-radius:22px;padding:10px 14px}
+.paketkarte .pb{width:84px;height:84px;flex:none}
+.paketkarte .pb svg{width:100%;height:100%}
+.paketkarte .t{flex:1}
+.paketkarte .t b{font:700 20px Fredoka,sans-serif;display:block}
+.paketkarte .t small{color:var(--mut)}
+.pfliste{width:100%;max-width:640px}
+.pf{display:flex;flex-direction:column;gap:2px;background:#fff;border-radius:14px;padding:10px 14px;margin-top:6px;border-left:6px solid #D43D43}
+.pf.w{border-left-color:#E08A00}
+.pf b{font:600 18px Fredoka,sans-serif}
+.pf span{color:var(--mut)}
+
+/* ---------- Überraschungspaket ---------- */
+.pkmini{display:inline-block;width:30px;height:30px}
+.pkmini svg{width:100%;height:100%;overflow:visible}
+.paketbuehne .schale svg{width:100%;height:100%;overflow:visible}
+.paketbuehne .schale.offen svg{animation:paketAuf .45s ease-in forwards}
+@keyframes paketAuf{0%{transform:scale(1)}40%{transform:scale(1.22) rotate(-4deg)}100%{transform:scale(.2);opacity:0}}
+.paketpreise{display:flex;flex-wrap:wrap;gap:16px;justify-content:center;max-width:960px;min-height:60px}
+.pp{background:rgba(255,255,255,.96);border-radius:22px;padding:12px 14px 14px;width:210px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--navy);box-shadow:0 6px 0 rgba(0,0,0,.22);opacity:0;animation:ppEin .6s cubic-bezier(.2,1.5,.4,1) forwards;animation-delay:calc(var(--i) * .9s + .5s)}
+.pp .b{width:110px;height:110px;display:grid;place-items:center}
+.pp .b svg{width:100%;height:100%}
+.pp .b.gross{font-size:76px}
+.pp b{font:700 19px Fredoka,sans-serif}
+.pp small{font:500 13px Inter,sans-serif;color:var(--mut)}
+.pp.freund{border:4px solid var(--rc)}
+.pp.myth{border:4px solid #C46BFF;box-shadow:0 0 0 3px #E8C6FF,0 0 30px var(--mg),0 6px 0 rgba(0,0,0,.22)}
+.pp.myth .b svg{filter:drop-shadow(0 0 8px var(--mg))}
+@keyframes ppEin{from{opacity:0;transform:scale(.3) translateY(40px)}to{opacity:1;transform:none}}
+
+/* Sperre: Tiere lassen sich nicht antippen, Berührungen gehen ans Wasser (scrollen, zoomen, füttern) */
+.riffbuehne.gesperrt .ritem{pointer-events:none}
+
+/* ---------- Riff-Effekte (V04): Licht, Wasser, Teilchen ---------- */
+/* Laterne: weiches, flackerndes Licht. Leuchtturm: Lichtschein und ein Lichtkegel, der um die Lampe kreist (rotate und translate sind getrennte Eigenschaften, nichts überschreibt sich) */
+.ritem.deko.d-laterne{--lh:.5}
+.ritem.deko.d-leuchtturm{--lh:.16}
+.riffbuehne.nacht .ritem.deko.d-laterne{--lh:1}
+.riffbuehne.nacht .ritem.deko.d-leuchtturm{--lh:1}
+.ritem.deko.d-laterne::before,.ritem.deko.d-leuchtturm::before,.ritem.deko.d-leuchtturm::after{content:"";position:absolute;pointer-events:none;translate:-50% -50%;aspect-ratio:1;border-radius:50%}
+.ritem.deko.d-laterne::before{left:50%;top:54%;width:330%;background:radial-gradient(circle,rgba(255,247,215,calc(.95*var(--lh))) 0,rgba(255,222,140,calc(.55*var(--lh))) 7%,rgba(255,196,96,calc(.24*var(--lh))) 20%,rgba(255,176,76,calc(.09*var(--lh))) 40%,rgba(255,170,70,0) 66%);animation:flackern 4.6s ease-in-out infinite}
+.ritem.deko.d-leuchtturm::before{left:50%;top:27%;width:300%;background:radial-gradient(circle,rgba(255,250,225,calc(.95*var(--lh))) 0,rgba(255,232,150,calc(.5*var(--lh))) 8%,rgba(255,214,120,calc(.16*var(--lh))) 24%,rgba(255,200,100,0) 58%);animation:flackern 5.4s ease-in-out infinite}
+.ritem.deko.d-leuchtturm::after{left:50%;top:27%;width:1000%;background:conic-gradient(from -9deg,rgba(255,248,214,0) 0deg,rgba(255,248,214,calc(.7*var(--lh))) 9deg,rgba(255,248,214,0) 18deg,transparent 18deg 171deg,rgba(255,248,214,0) 171deg,rgba(255,248,214,calc(.7*var(--lh))) 180deg,rgba(255,248,214,0) 189deg,transparent 189deg);-webkit-mask:radial-gradient(circle,#000 0,rgba(0,0,0,.8) 14%,rgba(0,0,0,.35) 32%,transparent 50%);mask:radial-gradient(circle,#000 0,rgba(0,0,0,.8) 14%,rgba(0,0,0,.35) 32%,transparent 50%);animation:leuchtKreisen 11s linear infinite}
+@keyframes flackern{0%,100%{opacity:.88;scale:1}22%{opacity:1;scale:1.035}41%{opacity:.8;scale:.98}63%{opacity:.97;scale:1.05}82%{opacity:.86;scale:1}}
+@keyframes leuchtKreisen{from{rotate:0deg}to{rotate:360deg}}
+.riffbuehne.ruhe .ritem::before,.riffbuehne.ruhe .ritem::after,.riffbuehne.ruhe .strahl,.riffbuehne.ruhe .oberflaeche,.riffbuehne.ruhe .sand::after{animation:none !important}
+
+/* Wasser: weiche, schwingende Lichtbahnen von oben, flirrende Oberfläche, wandernde Lichtnetze auf dem Sand */
+.riffbuehne .strahl{background:linear-gradient(104deg,transparent 0 8%,rgba(255,255,255,0) 10%,rgba(255,255,255,.3) 15%,rgba(255,255,255,0) 23%,transparent 25% 44%,rgba(255,255,255,0) 46%,rgba(255,255,255,.22) 51%,rgba(255,255,255,0) 59%,transparent 61% 74%,rgba(255,255,255,0) 76%,rgba(255,255,255,.16) 81%,rgba(255,255,255,0) 88%);-webkit-mask:linear-gradient(180deg,#000 0,rgba(0,0,0,.55) 45%,transparent 90%);mask:linear-gradient(180deg,#000 0,rgba(0,0,0,.55) 45%,transparent 90%);animation:strahlSchwingen 15s ease-in-out infinite alternate;background-size:calc(100% / var(--cols,1)) 100%}
+@keyframes strahlSchwingen{from{transform:translateX(-2.5%) skewX(-2.5deg)}to{transform:translateX(2.5%) skewX(2.5deg)}}
+.riffbuehne .oberflaeche{position:absolute;left:0;right:0;top:0;height:calc(6% / var(--rows,1));pointer-events:none;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 24' preserveAspectRatio='none'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='white' stop-opacity='.6'/%3E%3Cstop offset='1' stop-color='white' stop-opacity='0'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M0 0H160V11Q140 17 120 11T80 11T40 11T0 11Z' fill='url(%23g)'/%3E%3Cpath d='M0 11Q20 17 40 11T80 11T120 11T160 11' fill='none' stroke='white' stroke-opacity='.55' stroke-width='1.4'/%3E%3C/svg%3E") repeat-x;background-size:180px 100%;animation:wellenZug 14s linear infinite}
+@keyframes wellenZug{to{background-position:180px 0}}
+.riffbuehne .sand::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:radial-gradient(ellipse 70px 16px at 16% 38%,rgba(255,255,255,.34),transparent 72%),radial-gradient(ellipse 90px 20px at 48% 58%,rgba(255,255,255,.26),transparent 72%),radial-gradient(ellipse 60px 15px at 80% 32%,rgba(255,255,255,.3),transparent 72%),radial-gradient(ellipse 50px 12px at 34% 78%,rgba(255,255,255,.2),transparent 72%);animation:kaustik 8s ease-in-out infinite alternate}
+@keyframes kaustik{from{background-position:0 0}to{background-position:7% 9%}}
+.riffbuehne.nacht .sand::after{opacity:.25}
+.riffbuehne .nachthaut{box-shadow:inset 0 0 110px 14px rgba(2,6,40,.5)}
+
+/* Teilchen: Blasen wie Glas (Glanzpunkt, Rand, schlängelnd, platzen oben), Herzen und Sterne mit Schein, Ringwelle, Leuchtplankton, Sand */
+.teil{filter:drop-shadow(0 0 4px rgba(255,255,255,.65))}
+.teil.t-blase{border:0;background:radial-gradient(circle at 30% 26%,rgba(255,255,255,.96) 0 9%,rgba(255,255,255,0) 24%),radial-gradient(circle at 50% 50%,rgba(205,240,255,.05) 52%,rgba(170,225,255,.4) 86%,rgba(255,255,255,.72) 100%);box-shadow:inset 0 0 0 1px rgba(255,255,255,.5),inset -3px -4px 6px rgba(120,200,255,.22);animation:blaseSteigen var(--dauer,3.4s) cubic-bezier(.3,.1,.5,1) forwards;filter:none}
+@keyframes blaseSteigen{0%{opacity:0;transform:translate(-50%,0) scale(.5)}8%{opacity:.95}25%{transform:translate(calc(-50% + var(--w,6px) * .5),calc(var(--steig,-60px) * .25)) scale(.9)}50%{transform:translate(calc(-50% - var(--w,6px) * .4),calc(var(--steig,-60px) * .55)) scale(1)}75%{opacity:.9;transform:translate(calc(-50% + var(--w,6px) * .6),calc(var(--steig,-60px) * .85)) scale(1.05)}92%{opacity:.75;transform:translate(-50%,var(--steig,-60px)) scale(1.12)}100%{opacity:0;transform:translate(-50%,calc(var(--steig,-60px) * 1.03)) scale(1.6)}}
+@keyframes teilAuf{0%{opacity:0;transform:translate(-50%,-30%) scale(.3) rotate(-12deg)}12%{opacity:1;transform:translate(-50%,-60%) scale(1.25) rotate(6deg)}30%{transform:translate(calc(-50% + var(--w,0px) * .4),calc(-50% + var(--steig,-60px) * .3)) scale(1) rotate(-4deg)}100%{opacity:0;transform:translate(calc(-50% + var(--w,0px)),calc(-50% + var(--steig,-60px))) scale(.9) rotate(8deg)}}
+.teil.t-ring{border-radius:50%;border:2px solid rgba(255,255,255,.8);background:radial-gradient(circle,transparent 55%,rgba(255,255,255,.2) 78%,transparent);width:calc(var(--u) * 2.6);max-width:none;min-width:16px;animation:ringWeit 1.3s ease-out forwards;filter:none}
+@keyframes ringWeit{0%{opacity:.95;transform:translate(-50%,-50%) scale(.2,.08)}100%{opacity:0;transform:translate(-50%,-50%) scale(3.6,1.3)}}
+.teil.t-leucht{border-radius:50%;width:calc(var(--u) * 1.1);min-width:4px;max-width:9px;background:radial-gradient(circle,#D8FFFF 0,rgba(110,240,255,.85) 38%,rgba(60,200,255,0) 72%);box-shadow:0 0 12px 3px rgba(90,230,255,.5);animation:leuchtDriften var(--dauer,7s) ease-in-out forwards;filter:none}
+@keyframes leuchtDriften{0%{opacity:0;transform:translate(-50%,-50%) scale(.4)}20%{opacity:1}50%{opacity:.7;transform:translate(calc(-50% + var(--w,0px)),calc(-50% + var(--steig,-30px) * .5)) scale(1)}80%{opacity:1}100%{opacity:0;transform:translate(calc(-50% - var(--w,0px) * .5),calc(-50% + var(--steig,-30px))) scale(.6)}}
+.teil.t-sand{border-radius:50%;width:calc(var(--u) * 1.7);min-width:6px;max-width:15px;background:radial-gradient(circle,rgba(246,226,176,.95),rgba(226,196,140,0) 72%);animation:sandPuff 1s ease-out forwards;filter:none}
+@keyframes sandPuff{0%{opacity:.9;transform:translate(-50%,-50%) scale(.4)}100%{opacity:0;transform:translate(calc(-50% + var(--w,0px)),calc(-50% - 12px)) scale(2.2)}}
+.teil.t-glitzer{animation:glitzerAuf var(--dauer,1.6s) ease-out forwards}
+@keyframes glitzerAuf{0%{opacity:0;transform:translate(-50%,-50%) scale(.2) rotate(0)}25%{opacity:1;transform:translate(-50%,calc(-50% + var(--steig,-12px) * .3)) scale(1.1) rotate(45deg)}100%{opacity:0;transform:translate(calc(-50% + var(--w,0px)),calc(-50% + var(--steig,-12px))) scale(.3) rotate(120deg)}}
+.flocke{background:radial-gradient(circle at 32% 28%,#FFE7A8,#F2B04D 62%,#C47A25);border:0;box-shadow:0 1px 2px rgba(120,70,10,.5);animation:flockeWiegen 1.1s ease-in-out infinite alternate}
+@keyframes flockeWiegen{from{rotate:-18deg}to{rotate:18deg}}
+
+/* Verhalten: Blinzeln, Strecken, Spielzeug, Verstecken */
+.fx.blink .aug .auf{display:none}
+.fx.blink .aug .zu{display:inline}
+.fx.f-strecken{animation:fxStrecken 1.3s ease-in-out}
+@keyframes fxStrecken{0%,100%{transform:scale(1,1)}30%{transform:scale(1.14,.9) rotate(-3deg)}60%{transform:scale(.94,1.1) rotate(2deg)}}
+.ritem.deko.d-ball .dr.spiel{animation:ballHupf .9s cubic-bezier(.3,.7,.4,1) 2}
+@keyframes ballHupf{0%,100%{transform:translateY(0) scale(1,1)}25%{transform:translateY(-34%) rotate(-14deg) scale(.96,1.05)}50%{transform:translateY(0) scale(1.1,.88)}70%{transform:translateY(-12%) rotate(8deg) scale(1)}}
+.ritem.deko.d-reifen .dr.spiel{transform-origin:50% 8%;animation:reifenSchwung 1.05s ease-in-out 2}
+@keyframes reifenSchwung{0%,100%{transform:rotate(0)}30%{transform:rotate(-7deg)}70%{transform:rotate(6deg)}}
+
+/* ---------- Freunde fragen Vokabeln ---------- */
+.fragezeichen{position:absolute;z-index:9200;transform:translate(-50%,-100%);width:46px;height:46px;border-radius:50%;border:3px solid var(--navy);background:#fff;color:var(--navy);font:700 28px/1 Fredoka,sans-serif;display:grid;place-items:center;padding:0;box-shadow:0 5px 12px rgba(8,40,80,.3),0 0 0 4px rgba(255,255,255,.35);animation:fragePuls 1.5s ease-in-out infinite;cursor:pointer}
+.fragezeichen::after{content:"";position:absolute;left:50%;bottom:-9px;width:12px;height:12px;background:#fff;border-right:3px solid var(--navy);border-bottom:3px solid var(--navy);transform:translateX(-50%) rotate(45deg)}
+@keyframes fragePuls{0%,100%{translate:0 0;scale:1}50%{translate:0 -6px;scale:1.08}}
+.riffbuehne.ruhe .fragezeichen{animation:none !important}
+.rfrage .fkopf{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.rfrage .fkopf .fb{width:72px;height:72px;flex:none}
+.rfrage .fkopf .fb svg{width:100%;height:100%}
+.rfrage .fkopf b{font:700 22px Fredoka,sans-serif;display:block}
+.rfrage .fkopf small{color:var(--mut);font:500 15px Inter,sans-serif}
+.rfrage .ffrage{font:700 34px/1.2 Fredoka,sans-serif;color:var(--navy);text-align:center;background:#F1F9FC;border-radius:18px;padding:16px 12px;margin-bottom:14px}
+.rfrage .quiz{grid-template-columns:1fr}
+.rfrage .quiz button{min-height:64px;font-size:22px}
+.rfrage .fmeld{text-align:center;font:600 19px Fredoka,sans-serif;color:var(--navy);min-height:34px;margin-top:10px}
+.riffhinweis.modus{top:auto;bottom:14px;left:72px;display:flex;align-items:center;gap:10px;background:#2F8F6B}
+.riffhinweis.modus .ico{width:20px;height:20px}
+.riffhinweis.modus button{border:0;border-radius:10px;background:#fff;color:var(--navy);font:700 14px Fredoka,sans-serif;padding:4px 12px;min-height:32px}

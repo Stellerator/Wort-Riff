@@ -24,7 +24,7 @@ const check = (n, c, e) => { if (c) ok++; else { bad++; console.log('FEHLER:', n
     window.__freiPunkt = () => { const w = document.querySelector('#riffwrap').getBoundingClientRect(); for (let i = 0; i < 200; i++) { const x = w.left + 80 + Math.random() * (w.width - 160), y = w.top + 80 + Math.random() * (w.height * 0.45); const t = document.elementFromPoint(x, y); if (t && !t.closest('.ritem, .riffwerk, .riffhinweis, .werkzeug, .rede')) return { x, y }; } return null; };`);
   check('Stück-Hülle: swim → dr → fl → fx', !!(await page.$('.ritem.fig .swim .dr .fl .fx svg')));
   check('Deko trägt ihren Namen als Klasse', !!(await page.$('.ritem.deko.d-blasen')) && !!(await page.$('.ritem.deko.d-anemone')));
-  check('Knöpfe über dem Wasser: Futter, Tag/Nacht, Leben', (await page.$$('.riffwerk .rw')).length === 3);
+  check('Knöpfe über dem Wasser: Futter, Tag/Nacht, Sperre, Vokabel-Modus, Leben', (await page.$$('.riffwerk .rw')).length === 5);
   check('Teilchen-Ebene und Nachthaut vorhanden', !!(await page.$('#teile')) && !!(await page.$('.nachthaut')));
 
   // ---------- Bewegung ----------

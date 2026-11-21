@@ -45,7 +45,7 @@ function neuerNutzer(name, avatar) {
 const lektionenSp = sp => Object.values(S.lib.lessons).filter(l => l.sp === sp).sort((a, b) => a.nr - b.nr);
 const hatKarten = sp => lektionenSp(sp).some(l => Object.keys(l.cards).length);
 function cidInfo(cid) {
-  const t = cid.split('_');
+  const t = String(cid || '').split('_');
   const lkey = t[0], satz = t[1], nrTxt = t[2];
   const L = S.lib.lessons[lkey];
   const c = L && L.cards[cid];
@@ -62,6 +62,7 @@ function satzListe(lkeys) {
 }
 // Fragetext/Antworttext einer Wortkarte (nur wenn die Lektion Text hat)
 function karteText(cid) {
+  if (!cid) return null;
   const ci = cidInfo(cid);
   if (!ci.L || !ci.c || ci.info.art !== 'wort') return null;
   const e = ci.L.entries[ci.c.nr];

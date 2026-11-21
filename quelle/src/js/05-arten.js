@@ -4,7 +4,9 @@
 const INK = '#14253F';
 const ART = (() => {
   const T = (d, w, fill) => `<path d="${d}" fill="none" stroke="${INK}" stroke-width="${w + 10}"/><path d="${d}" fill="none" stroke="${fill}" stroke-width="${w}"/>`;   // Röhre mit Kontur
-  const eye = (x, y, r = 9, dx = 1.5) => `<circle cx="${x}" cy="${y}" r="${r}" fill="#fff"/><circle cx="${x + dx}" cy="${y + 1}" r="${r * 0.62}" fill="${INK}" stroke="none"/><circle cx="${x + dx + r * 0.22}" cy="${y - r * 0.2}" r="${r * 0.24}" fill="#fff" stroke="none"/>`;
+  // Augen: offen (.auf) und als geschlossener Bogen (.zu, ohne CSS unsichtbar). Schläft ein Freund im Riff (.schlaf), zeigt das CSS nur den Bogen.
+  const zuBogen = (x, y, r) => `<path class="zu" display="none" d="M${+(x - r * 0.85).toFixed(1)} ${y + 1} Q${x} ${+(y + 1 + r * 0.8).toFixed(1)} ${+(x + r * 0.85).toFixed(1)} ${y + 1}" fill="none" stroke-width="4.5"/>`;
+  const eye = (x, y, r = 9, dx = 1.5) => `<g class="aug"><g class="auf"><circle cx="${x}" cy="${y}" r="${r}" fill="#fff"/><circle cx="${x + dx}" cy="${y + 1}" r="${r * 0.62}" fill="${INK}" stroke="none"/><circle cx="${x + dx + r * 0.22}" cy="${y - r * 0.2}" r="${r * 0.24}" fill="#fff" stroke="none"/></g>${zuBogen(x, y, r)}</g>`;
   const cheek = (x, y, rx = 9, ry = 6) => `<ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${ry}" fill="#FF8FA8" opacity=".62" stroke="none"/>`;
   const smile = (x, y, w = 9, d = 8) => `<path d="M${x - w} ${y} Q${x} ${y + d} ${x + w} ${y}" fill="none" stroke-width="4"/>`;
   const shine = d => `<path d="${d}" fill="#fff" opacity=".35" stroke="none"/>`;
@@ -225,7 +227,7 @@ const ART = (() => {
     return `<path d="M${(cx + ux * r + nx * w).toFixed(1)} ${(cy + uy * r + ny * w).toFixed(1)} L${(cx + ux * (r + len)).toFixed(1)} ${(cy + uy * (r + len)).toFixed(1)} L${(cx + ux * r - nx * w).toFixed(1)} ${(cy + uy * r - ny * w).toFixed(1)}Z" fill="${fill}"/>`;
   }).join('');
   const brauen = (x, y, ex, s = 1) => `<path d="M${x - ex - 11 * s} ${y - 19 * s} L${x - ex + 9 * s} ${y - 12 * s} M${x + ex + 11 * s} ${y - 19 * s} L${x + ex - 9 * s} ${y - 12 * s}" fill="none" stroke-width="5"/>`;
-  const augeA = (x, y, r, iris) => `<circle cx="${x}" cy="${y}" r="${r}" fill="#fff"/><circle cx="${x + 1}" cy="${y + 1}" r="${r * 0.74}" fill="${iris}" stroke-width="2"/><circle cx="${x + 1.5}" cy="${y + 1.5}" r="${r * 0.4}" fill="${INK}" stroke="none"/><circle cx="${x + r * 0.32}" cy="${y - r * 0.26}" r="${r * 0.26}" fill="#fff" stroke="none"/>`;
+  const augeA = (x, y, r, iris) => `<g class="aug"><g class="auf"><circle cx="${x}" cy="${y}" r="${r}" fill="#fff"/><circle cx="${x + 1}" cy="${y + 1}" r="${r * 0.74}" fill="${iris}" stroke-width="2"/><circle cx="${x + 1.5}" cy="${y + 1.5}" r="${r * 0.4}" fill="${INK}" stroke="none"/><circle cx="${x + r * 0.32}" cy="${y - r * 0.26}" r="${r * 0.26}" fill="#fff" stroke="none"/></g>${zuBogen(x, y, r)}</g>`;
   function evoAura(stufe, p, fid) {                               // Schein hinter der Figur (Stufe 3 stärker, mit drehenden Strahlen) und Funkeln davor
     const hoch = stufe === 3, ag = 'ag_' + fid;
     const defs = `<radialGradient id="${ag}" cx="50%" cy="50%" r="50%"><stop offset="0.35" stop-color="${mix(p.a, '#ffffff', 0.35)}" stop-opacity="${hoch ? 0.6 : 0.4}"/><stop offset="1" stop-color="${p.a}" stop-opacity="0"/></radialGradient>`;

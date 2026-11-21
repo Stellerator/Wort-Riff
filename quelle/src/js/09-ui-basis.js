@@ -105,7 +105,7 @@ function kopfLeiste() {
   const u = cur(), r = rangVon(u.xp), m = muschelAnzahl(u);
   return `<div class="top"><button class="wer" data-a="nav" data-v="ich"><div class="avatar mittel">${figSvg(u.avatar)}</div><div><b>${esc(u.name)}</b><small>${esc(r.name)}</small><div class="rangbar"><div class="leiste gold"><b style="width:${Math.round(r.pct * 100)}%"></b></div></div></div></button>
     <div class="rechts"><span class="chip">${PERLE} <span class="zahl">${nf(u.perlen)}</span></span>
-    <button class="muschelknopf ${m ? 'voll' : ''}" data-a="${m ? 'muschelStart' : 'nav'}" data-v="album" aria-label="Muscheln">${muschelSvg(u.muscheln.schatz ? 'schatz' : 'perl')}<span>${m}</span></button></div></div>`;
+    <button class="muschelknopf ${m ? 'voll' : ''}" data-a="${m ? 'muschelStart' : 'nav'}" data-v="album" aria-label="Muscheln">${muschelSvg(u.muscheln.schatz ? 'schatz' : 'perl')}<span>${m}</span></button>${paketAnzahl(u) ? `<button class="muschelknopf voll" data-a="paketStart" aria-label="Überraschungspakete"><span class="pkmini">${paketSvg(paketHoechste(u))}</span><span>${paketAnzahl(u)}</span></button>` : ''}</div></div>`;
 }
 
 // ---------- Hinweise ----------

@@ -7,7 +7,7 @@ const { starte } = require('../tests/_edge');
 
 const ROOT = path.join(__dirname, '..');
 const ZIEL = process.argv[2] || path.join(ROOT, 'icons-archiv', 'flo');
-const js = fs.readdirSync(path.join(ROOT, 'src', 'js')).filter(f => /^0[0-9]-/.test(f) && f <= '06z').sort()
+const js = fs.readdirSync(path.join(ROOT, 'src', 'js')).filter(f => /^0[0-9][a-z]?-/.test(f) && f <= '06z').sort()
   .map(f => fs.readFileSync(path.join(ROOT, 'src', 'js', f), 'utf8')).join('\n');
 
 (async () => {

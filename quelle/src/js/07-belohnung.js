@@ -9,6 +9,7 @@ const R = {
   perlen: { neuGewusst: 1, wiederholt: 1, runde: 1, perfekt: 2, tagesziel: 3, serieMax: 3, meilen: { 25: 10, 50: 20, 75: 30, 100: 80 }, dublette: 4, dubletteRar: 4, stern: 15 },
   funken: { dublette: 2, dubletteRar: 2 },                        // Korallenfunken für eine Dublette: 2 / 4 / 6 / 8 je Seltenheit
   sternKosten: [0, 0, 5, 10, 16, 24],                             // Korallenfunken für Stern 2…5 (Index = Ziel-Stern); Entwicklung bei Stern 3 und 5
+  mythDublette: { perlen: 25, funken: 15 },                       // Mythos doppelt gefunden
   pityNach: 10                                                    // spätestens die 10. Muschel enthält eine epische oder legendäre Figur
 };
 const MUSCHEL = {
@@ -72,6 +73,12 @@ function wahrscheinlichkeiten(u, art) {                           // tatsächlic
 
 function ziehen(u, art) {
   const tiefe = tiefeNach(u);
+  if (tiefe >= MYTH_CHANCE.ab && rand() * 100 < MYTH_CHANCE[art]) {   // mystischer Fund: Schutzzähler und Seltenheits-Wurf bleiben unberührt
+    const res = mythGeben(u, mythWaehlen(u));
+    res.art = art; res.tiefe = tiefe; res.pity = false; u.pity = 0;
+    u.stats.muscheln = (u.stats.muscheln || 0) + 1;
+    return res;
+  }
   const gew = MUSCHEL[art].gew.map((g, i) => (tiefe >= RAR[i].tiefe ? g : 0));     // nur Wesen, die in dieser Tiefe leben
   const hochFrei = tiefe >= RAR[2].tiefe;
   u.pity = hochFrei ? (u.pity || 0) + 1 : 0;                      // Schutzzähler läuft erst, wenn es etwas Episches zu finden gibt
@@ -83,13 +90,23 @@ function ziehen(u, art) {
   const gs = sum(gew); let x = rand() * gs; rar = 0;
   for (let i = 0; i < gew.length; i++) { if (x < gew[i]) { rar = i; break; } x -= gew[i]; }
   if (rar >= 2) u.pity = 0;
-  // Innerhalb der Seltenheit werden noch unbekannte Figuren bevorzugt (3:1), damit Neues öfter kommt als Doppeltes
-  const pool = figNachSeltenheit(rar);
-  const ws = pool.map(i => (u.owned[i] ? 1 : 3));
+  const id = figWaehlen(u, rar);
+  const res = figGeben(u, id, rar);
+  res.art = art; res.pity = pity; res.tiefe = tiefe;
+  u.stats.muscheln = (u.stats.muscheln || 0) + 1;
+  return res;
+}
+// Unbekannte Figuren einer Seltenheit werden dreimal so oft gezogen wie schon bekannte
+function figWaehlen(u, rar) {
+  const pool = figNachSeltenheit(rar), ws = pool.map(i => (u.owned[i] ? 1 : 3));
   let y = rand() * sum(ws), id = pool[0];
   for (let i = 0; i < pool.length; i++) { if (y < ws[i]) { id = pool[i]; break; } y -= ws[i]; }
+  return id;
+}
+// Figur ins Album legen; eine Dublette gibt Perlen, Korallenfunken und ab und zu einen Stern
+function figGeben(u, id, rar) {
   const besitz = u.owned[id];
-  const res = { id, rar, art, neu: !besitz, perlen: 0, funken: 0, sternNeu: 0, pity, tiefe, stufeAlt: besitz ? figStufe(besitz.stern) : 1, stufeNeu: 1 };
+  const res = { id, rar, neu: !besitz, perlen: 0, funken: 0, sternNeu: 0, stufeAlt: besitz ? figStufe(besitz.stern) : 1, stufeNeu: 1 };
   if (!besitz) u.owned[id] = { n: 1, stern: 1, ts: Date.now(), neu: true };
   else {
     besitz.n++;
@@ -101,7 +118,19 @@ function ziehen(u, art) {
     u.perlen += res.perlen;
     res.stufeNeu = figStufe(besitz.stern);
   }
-  u.stats.muscheln = (u.stats.muscheln || 0) + 1;
+  return res;
+}
+// Mythen der Tiefe (06m-mythos): sehr selten in Muscheln, etwas häufiger in großen Überraschungspaketen. Unbekannte werden dreimal so oft gezogen.
+function mythWaehlen(u) {
+  const ids = mythIds(), b = mythBesitz(u), ws = ids.map(i => (b[i] ? 1 : 3));
+  let y = rand() * sum(ws), id = ids[0];
+  for (let i = 0; i < ids.length; i++) { if (y < ws[i]) { id = ids[i]; break; } y -= ws[i]; }
+  return id;
+}
+function mythGeben(u, id) {
+  const b = mythBesitz(u), res = { id, myth: true, neu: !b[id], perlen: 0, funken: 0 };
+  if (!b[id]) b[id] = { n: 1, ts: Date.now(), neu: true };
+  else { b[id].n++; res.perlen = R.mythDublette.perlen; res.funken = R.mythDublette.funken; u.perlen += res.perlen; u.funken = funkenStand(u) + res.funken; }
   return res;
 }
 function muschelOeffnen(u) {                                      // Schatzmuscheln zuerst
@@ -113,6 +142,66 @@ function muschelOeffnen(u) {                                      // Schatzmusch
   sichere();
   return res;
 }
+// ---------- Überraschungspakete: die Belohnung der Generalprobe ----------
+// Je mehr Karten in einer Generalprobe abgefragt wurden, desto größer das Paket (ab 5 / 15 / 30 / 60 Karten); pro Projekt und Tag gibt es eins.
+// Jeder Platz im Paket enthält Perlen, Korallenfunken, einen Freund oder einen besonderen Gegenstand (Riff-Deko; in großen Paketen auch ein Mythos).
+// gew = Gewichte [Perlen, Funken, Freund, Gegenstand]; rar = Gewichte der Seltenheit des Freundes (nur Zonen, die schon erreicht sind); preis = höchster Deko-Preis; myth = Prozent, dass der Gegenstand ein Mythos ist
+const PAKET = [null,
+  { stufe: 1, name: 'Kleines Überraschungspaket', ab: 5, plaetze: 1, gew: [50, 35, 12, 3], perlen: [10, 20], funken: [3, 6], rar: [62, 25, 10, 3], preis: 70, myth: 0 },
+  { stufe: 2, name: 'Überraschungspaket', ab: 15, plaetze: 2, gew: [38, 32, 22, 8], perlen: [20, 40], funken: [6, 10], rar: [45, 38, 15, 2], preis: 95, myth: 2 },
+  { stufe: 3, name: 'Großes Überraschungspaket', ab: 30, plaetze: 3, gew: [28, 28, 28, 16], perlen: [40, 80], funken: [10, 18], rar: [35, 40, 20, 5], preis: 150, myth: 8 },
+  { stufe: 4, name: 'Sternen-Überraschungspaket', ab: 60, plaetze: 4, gew: [20, 24, 32, 24], perlen: [80, 150], funken: [18, 30], rar: [15, 40, 33, 12], preis: 999, myth: 18 }
+];
+const PAKET_KAT = ['perlen', 'funken', 'freund', 'ding'];
+const paketBesitz = u => (u.pakete = u.pakete || { 1: 0, 2: 0, 3: 0, 4: 0 });
+const paketAnzahl = u => sum(Object.values(paketBesitz(u)));
+const paketHoechste = u => { const b = paketBesitz(u); for (let i = PAKET.length - 1; i >= 1; i--) if (b[i] > 0) return i; return 0; };
+const paketStufeFuer = n => { let s = 0; for (let i = 1; i < PAKET.length; i++) if (n >= PAKET[i].ab) s = i; return s; };
+function paketVergeben(u, P, n) {                                 // n = abgefragte Karten → { stufe, grund: ok | zuwenig | heute }
+  const stufe = paketStufeFuer(n);
+  if (!stufe) return { stufe: 0, grund: 'zuwenig' };
+  if (P.paketAm === heute()) return { stufe: 0, grund: 'heute', moeglich: stufe };
+  P.paketAm = heute(); paketBesitz(u)[stufe]++;
+  return { stufe, grund: 'ok' };
+}
+const wuerfle = gew => { const gs = sum(gew); let x = rand() * gs; for (let i = 0; i < gew.length; i++) { if (x < gew[i]) return i; x -= gew[i]; } return gew.length - 1; };
+const zwischen = ([a, b]) => a + Math.floor(rand() * (b - a + 1));
+function paketOeffnen(u, stufe) {                                 // → { stufe, preise: [{typ, …}], abzeichen } oder null
+  const pk = PAKET[stufe], bes = paketBesitz(u);
+  if (!pk || !(bes[stufe] > 0)) return null;
+  bes[stufe]--;
+  const tiefe = tiefeNach(u), preise = [];
+  for (let k = 0; k < pk.plaetze; k++) {
+    const kat = PAKET_KAT[wuerfle(pk.gew)];
+    if (kat === 'perlen') { const n = zwischen(pk.perlen); u.perlen += n; preise.push({ typ: 'perlen', n }); }
+    else if (kat === 'funken') { const n = zwischen(pk.funken); u.funken = funkenStand(u) + n; preise.push({ typ: 'funken', n }); }
+    else if (kat === 'freund') {
+      const rar = wuerfle(pk.rar.map((g, i) => (tiefe >= RAR[i].tiefe ? g : 0)));
+      preise.push({ typ: 'freund', res: figGeben(u, figWaehlen(u, rar), rar) });
+    } else if (pk.myth && rand() * 100 < pk.myth) preise.push({ typ: 'myth', res: mythGeben(u, mythWaehlen(u)) });
+    else {
+      const ids = Object.keys(DEKO).filter(d => DEKO[d].preis <= pk.preis), ws = ids.map(d => DEKO[d].preis);     // teurere Stücke sind wahrscheinlicher
+      let y = rand() * sum(ws), id = ids[0];
+      for (let i = 0; i < ids.length; i++) { if (y < ws[i]) { id = ids[i]; break; } y -= ws[i]; }
+      u.deko[id] = (u.deko[id] || 0) + 1; (u.dekoNeu = u.dekoNeu || {})[id] = true;
+      preise.push({ typ: 'deko', id });
+    }
+  }
+  u.stats.pakete = (u.stats.pakete || 0) + 1;
+  const abz = pruefeAbzeichen(u);
+  sichere();
+  return { stufe, preise, abzeichen: abz };
+}
+// Auswertung einer Generalprobe: antworten = [{ cid, r }] mit r 0 (nicht gewusst), 1 (wackelig), 2/3 (gewusst)
+function probeAuswerten(antworten) {
+  const n = antworten.length;
+  return {
+    n, gewusst: antworten.filter(a => a.r >= 2).length, wackelig: antworten.filter(a => a.r === 1).length, falsch: antworten.filter(a => a.r === 0).length,
+    quote: n ? antworten.filter(a => a.r >= 2).length / n : 0,
+    wackelListe: antworten.filter(a => a.r === 1).map(a => a.cid), falschListe: antworten.filter(a => a.r === 0).map(a => a.cid)
+  };
+}
+
 // Mit Korallenfunken lässt sich ein Freund gezielt stärken: jeder Stern kostet Funken, Stern 3 und 5 entwickeln die Figur weiter.
 const funkenStand = u => u.funken || 0;
 function sternKosten(u, id) { const b = u.owned[id]; return b && b.stern < 5 ? R.sternKosten[b.stern + 1] : 0; }
@@ -160,6 +249,9 @@ function pruefeAbzeichen(u) {
     selten: figIds().some(i => FIG[i].rar === 1 && u.owned[i]), legende: figIds().some(i => FIG[i].rar === 3 && u.owned[i]),
     evo1: Object.values(u.owned).some(o => o.stern >= 3), evo3: Object.values(u.owned).some(o => o.stern >= 5),
     zuhause1: riffWohl(u).length >= 1, zuhause5: riffWohl(u).length >= 5, futter1: (u.stats.futter || 0) >= 1,
+    fragen1: (st.riffFragen || 0) >= 1, fragen50: (st.riffFragen || 0) >= 50, fragen250: (st.riffFragen || 0) >= 250,
+    probe1: (st.proben || 0) >= 1, probe5: (st.proben || 0) >= 5, paket1: (st.pakete || 0) >= 1,
+    mythos1: mythZahl(u) >= 1, mythos5: mythZahl(u) >= 5, mythosalle: mythZahl(u) >= mythIds().length,
     riff1: u.riff.items.filter(i => i.kind === 'deko').length >= 1, riff10: u.riff.items.length >= 10
   };
   Object.keys(bed).forEach(id => { if (bed[id] && !u.badges[id]) { u.badges[id] = Date.now(); neu.push(id); } });

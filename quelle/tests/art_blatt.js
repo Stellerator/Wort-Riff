@@ -7,7 +7,7 @@ const { starte } = require('./_edge');
 const modus = process.argv[3] || 'arten';
 const nurArten = (process.argv[4] || '').split(',').filter(Boolean), zellGroesse = Number(process.argv[5]) || 250;
 const out = process.argv[2] || path.join(__dirname, 'blatt.png');
-const js = fs.readdirSync(path.join(__dirname, '..', 'src', 'js')).filter(f => /^0[0-9]-/.test(f) && f <= '06z').sort()
+const js = fs.readdirSync(path.join(__dirname, '..', 'src', 'js')).filter(f => /^0[0-9][a-z]?-/.test(f) && f <= '06z').sort()
   .map(f => fs.readFileSync(path.join(__dirname, '..', 'src', 'js', f), 'utf8')).join('\n');
 
 (async () => {
@@ -34,6 +34,8 @@ const js = fs.readdirSync(path.join(__dirname, '..', 'src', 'js')).filter(f => /
       ['knurr', 'aurelia', 'lenni', 'nero', 'mimo', 'glimmer'].forEach(id => [1, 2, 3].forEach(st => cell(figSvg(id, st), figName(id, st), 150)));
     } else if (m === 'deko') {
       Object.values(DEKO).forEach(d => cell(dekoSvg(d.id), d.name, 150));
+    } else if (m === 'mythen') {
+      Object.values(MYTH).forEach(d => cell(mythSvg(d.id), d.name, gr || 230));
     } else if (m === 'abzeichen') {
       Object.values(BADGES).forEach(d => cell(badgeSvg(d.id, true), d.name, 150));
     }

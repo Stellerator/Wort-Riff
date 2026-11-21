@@ -55,7 +55,7 @@ const gitSha = b => sha.createHash('sha1').update(Buffer.concat([Buffer.from(`bl
     const info = await page.evaluate(`(async () => ({ web: UPD.web, ctl: !!navigator.serviceWorker.controller, caches: await caches.keys(), manifest: !!document.querySelector('link[rel=manifest]'), icon: !!document.querySelector('link[rel=apple-touch-icon]'), id: APP_ID }))()`);
     check('Web-Modus erkannt', info.web === true);
     check('Service Worker übernimmt die Seite', info.ctl === true, info);
-    check('Offline-Kopie angelegt (wortriff-V03-<Kennung>)', info.caches.some(c => c === 'wortriff-V03-' + ID), info.caches);
+    check('Offline-Kopie angelegt (wortriff-V04-<Kennung>)', info.caches.some(c => c === 'wortriff-V04-' + ID), info.caches);
     check('Manifest und Symbol verlinkt', info.manifest && info.icon);
     check('App kennt ihre Kennung = version.json', info.id === ID, { id: info.id, ID });
     const mani = await page.evaluate(`fetch('manifest.webmanifest').then(r => r.json())`);
@@ -109,20 +109,20 @@ const gitSha = b => sha.createHash('sha1').update(Buffer.concat([Buffer.from(`bl
 
     // ---------- Update der App (neue Fassung auf dem Server) ----------
     const html = fs.readFileSync(path.join(REPO, 'index.html'), 'utf8').replace(`APP_ID = '${ID}'`, `APP_ID = 'bbbbbbb'`).replace(/(<title>)Wortriff/, '$1Wortriff');
-    const swNeu = fs.readFileSync(path.join(REPO, 'sw.js'), 'utf8').replace(`V03-${ID}`, 'V03-bbbbbbb');
+    const swNeu = fs.readFileSync(path.join(REPO, 'sw.js'), 'utf8').replace(`V04-${ID}`, 'V04-bbbbbbb');
     A.extra.set('/index.html', Buffer.from(html)); A.extra.set('/', Buffer.from(html));
-    A.extra.set('/sw.js', Buffer.from(swNeu)); A.extra.set('/version.json', Buffer.from(JSON.stringify({ id: 'bbbbbbb', version: 'V03', stand: 'neu' })));
+    A.extra.set('/sw.js', Buffer.from(swNeu)); A.extra.set('/version.json', Buffer.from(JSON.stringify({ id: 'bbbbbbb', version: 'V04', stand: 'neu' })));
     await page.evaluate("gehe('ich')");
     await page.evaluate('updatePruefen({ hand: true })');
     await page.waitForFunction('UPD.wartet', { timeout: 30000 });
     check('Neue Fassung wird gefunden und wartet', (await page.evaluate("UPD.ergebnis.app === true && !!UPD.wartet")));
     check('Knopf „Jetzt installieren“ erscheint, noch alte Fassung', !!(await page.$('#updpille [data-a="updateJetzt"]')) && (await page.evaluate('APP_ID')) === ID);
-    check('„Ich“ zeigt App und Updates', (await page.$eval('#appPanel', e => e.textContent)).includes('Wortriff V03'));
+    check('„Ich“ zeigt App und Updates', (await page.$eval('#appPanel', e => e.textContent)).includes('Wortriff V04'));
     await Promise.all([page.waitForNavigation({ waitUntil: 'load', timeout: 30000 }), page.click('#updpille [data-a="updateJetzt"]')]);
     await page.waitForFunction('window.__bereit === true', { timeout: 20000 });
     const nach = await page.evaluate(`(async () => ({ id: APP_ID, caches: await caches.keys(), users: Object.values(S.users).map(u => u.name + ':' + u.xp), lek: Object.keys(S.lib.lessons) }))()`);
     check('Nach dem Update läuft die neue Fassung', nach.id === 'bbbbbbb', nach);
-    check('Alte Offline-Kopie ist weg, nur noch die neue da', nach.caches.length === 1 && nach.caches[0] === 'wortriff-V03-bbbbbbb', nach.caches);
+    check('Alte Offline-Kopie ist weg, nur noch die neue da', nach.caches.length === 1 && nach.caches[0] === 'wortriff-V04-bbbbbbb', nach.caches);
     check('Lernstand und Karten sind nach dem Update unverändert', nach.users.join() === 'Mia:777' && nach.lek.indexOf('E10') >= 0, nach);
 
     // ---------- Offline ----------

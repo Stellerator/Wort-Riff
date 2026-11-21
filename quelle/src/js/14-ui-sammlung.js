@@ -27,6 +27,7 @@ AKT.muschelAuf = () => {
   const res = muschelOeffnen(u);
   if (!res) return;
   p.phase = 'offen'; p.res = res;
+  if (res.myth) return muschelMyth(p, res);
   const f = FIG[res.id], farbe = RC(res.rar);
   $('.muschel').style.setProperty('--glow', farbe);
   const sch = $('#schale'); sch.classList.remove('wackelt'); sch.classList.add('offen');
@@ -56,12 +57,40 @@ AKT.muschelAuf = () => {
     }, 900);
   }, 1250);
 };
+// Mystischer Fund: ein Wesen oder Gegenstand aus den Mythen der Tiefe (06m-mythos) steckt in der Muschel
+function muschelMyth(p, res) {
+  const m = MYTH[res.id], u = cur();
+  $('.muschel').style.setProperty('--glow', m.glow);
+  const sch = $('#schale'); sch.classList.remove('wackelt'); sch.classList.add('offen');
+  TON.spiel('muschelAuf');
+  const lebt = () => V.name === 'muschel' && V.p === p && $('#fund');
+  setTimeout(() => {
+    if (!lebt()) return;
+    $('#fund').innerHTML = `<div class="mythfund" style="--mg:${m.glow}">${mythSvg(res.id)}</div>`;
+    TON.spiel('legende'); setTimeout(() => TON.spiel('episch'), 450);
+    FX.konfetti(240); FX.blasen(innerWidth / 2, innerHeight * 0.4, 34);
+  }, 350);
+  $('#mTitel').textContent = 'Ein mystischer Fund!';
+  setTimeout(() => {
+    if (!lebt()) { (res.abzeichen || []).forEach(b => toast(`Neues Abzeichen: ${BADGES[b].name}`, 'stern', 3200)); return; }
+    const info = $('#mInfo');
+    info.style.setProperty('--rc', MYTH_RAR.farbe);
+    const extra = res.neu ? '<span class="neuband">NEU im Album!</span>' : `<span class="chip gold">Doppelt: +${res.perlen} Perlen ${PERLE}</span><span class="chip koralle">+${res.funken} Korallenfunken ${FUNKE}</span>`;
+    info.innerHTML = `<div class="raritaet mythraritaet">${MYTH_RAR.name} · ${m.wesen ? 'Fabelwesen' : 'Gegenstand'}</div><div class="name">${esc(m.name)}</div><div class="zeile w" style="justify-content:center">${extra}</div><div class="text">${esc(m.text)}</div>`;
+    info.classList.add('da');
+    const rest = muschelAnzahl(u);
+    $('#mKnoepfe').innerHTML = `${rest ? `<button class="btn gold gross" data-a="muschelNoch">Nächste Muschel (${rest})</button>` : ''}<button class="btn ${rest ? 'weiss' : 'gruen gross'}" data-a="muschelFertig">${rest ? 'Ins Album' : 'Weiter'}</button>`;
+    $('#mRest').style.visibility = 'hidden';
+    (res.abzeichen || []).forEach((b, i) => setTimeout(() => toast(`Neues Abzeichen: ${BADGES[b].name}`, 'stern', 3200), 600 + i * 900));
+  }, 1250);
+}
 AKT.muschelNoch = () => { const u = cur(); gehe('muschel', { phase: 'zu', art: u.muscheln.schatz ? 'schatz' : 'perl' }); };
 AKT.muschelFertig = () => gehe('album');
 AKT.chancen = () => {
   const u = cur(), t = tiefeJetzt(u), pp = wahrscheinlichkeiten(u, 'perl'), ps = wahrscheinlichkeiten(u, 'schatz');
   zeigeBlatt(`<h2>Wie wahrscheinlich ist was?</h2><p class="mut" style="margin:6px 0 12px">Hier steht offen, was in den Muscheln stecken kann. Es gibt nichts zu kaufen, Muscheln bekommst du nur durchs Lernen. Seltene Wesen leben tiefer: Sie stecken erst in den Muscheln, wenn du tief genug getaucht bist (jetzt: <b>${nf(t)} m</b>).</p>
     <table class="odds"><tr><th></th><th>${MUSCHEL.perl.name}</th><th>${MUSCHEL.schatz.name}</th></tr>${RAR.map(r => { const frei = t >= r.tiefe; return `<tr style="${frei ? '' : 'opacity:.55'}"><td><b style="color:${r.farbe}">${r.name}</b> <span class="mut">(${figNachSeltenheit(r.id).length} Figuren, ${esc(r.zone)})</span><br><small class="mut">${frei ? 'frei seit ' + r.tiefe + ' m' : ico('schloss') + ' ab ' + r.tiefe + ' m Tiefe, noch ' + nf(r.tiefe - t) + ' m'}</small></td><td>${frei ? Math.round(pp[r.id]) + ' %' : '–'}</td><td>${frei ? Math.round(ps[r.id]) + ' %' : '–'}</td></tr>`; }).join('')}</table>
+    <p class="mut" style="margin-top:10px;font-size:14px"><b style="color:${MYTH_RAR.farbe}">✦ Mythisches</b> (${mythIds().length} Fabelwesen und Gegenstände, siehe Album) ist noch viel seltener: ${MYTH_CHANCE.perl} % pro ${MUSCHEL.perl.name}, ${MYTH_CHANCE.schatz} % pro ${MUSCHEL.schatz.name}, ab ${MYTH_CHANCE.ab} m Tauchtiefe (${t >= MYTH_CHANCE.ab ? 'frei' : 'noch gesperrt'}). Außerdem stecken sie manchmal in großen Überraschungspaketen der Generalprobe.</p>
     <p class="mut" style="margin-top:12px;font-size:14px">Neue Figuren werden bei gleicher Seltenheit dreimal so oft gezogen wie schon bekannte. Sobald es Episches zu finden gibt, enthält spätestens die ${R.pityNach}. Muschel eine epische oder legendäre Figur. Doppelte geben Perlen und Korallenfunken. Mit den Funken stärkst du Freunde im Album (bis zu 5 Sterne); bei 3 und bei 5 Sternen entwickeln sie sich weiter.</p>`);
 };
 
@@ -76,7 +105,34 @@ ANSICHT.album = () => {
     return `<div class="serie ${frei ? '' : 'gesperrt'}"><h3><span style="color:${r.farbe}">●</span> ${r.serie} <small class="mut" style="font:600 15px Inter">${haben}/${ids.length} · ${r.name}</small>${frei ? '' : `<span class="chip klein">${ico('schloss')} ab ${r.tiefe} m Tiefe · noch ${nf(r.tiefe - tiefe)} m</span>`}</h3><div class="figraster">${ids.map(i => figKachel(u, i)).join('')}</div></div>`;
   }).join('');
   return mitNav(`<div>${kopfLeiste()}<div class="kopf"><h1>Album</h1><button class="btn gold" data-a="muschelStart" ${m ? '' : 'disabled'}>${muschelSvgKlein()} Muschel öffnen (${m})</button><button class="btn weiss klein" data-a="chancen">Chancen</button></div>
-    <div class="panel dicht" style="margin-bottom:18px"><div class="zeile"><b class="fred">${mein} von ${alle.length} Figuren gefunden</b><span class="sp1"></span><span class="chip koralle" title="Korallenfunken: Doppelte Figuren geben Funken. Damit stärkst du Freunde.">${FUNKE} <b class="zahl">${nf(funkenStand(u))}</b> Korallenfunken</span><span class="mut">Tiefe: ${nf(tiefe)} m · ${esc(RAR[zoneVonTiefe(tiefe)].zone)}</span></div><div class="leiste gold" style="margin-top:8px"><b style="width:${mein / alle.length * 100}%"></b></div></div>${serien}</div>`);
+    <div class="panel dicht" style="margin-bottom:18px"><div class="zeile"><b class="fred">${mein} von ${alle.length} Figuren gefunden</b><span class="sp1"></span><span class="chip koralle" title="Korallenfunken: Doppelte Figuren geben Funken. Damit stärkst du Freunde.">${FUNKE} <b class="zahl">${nf(funkenStand(u))}</b> Korallenfunken</span><span class="mut">Tiefe: ${nf(tiefe)} m · ${esc(RAR[zoneVonTiefe(tiefe)].zone)}</span></div><div class="leiste gold" style="margin-top:8px"><b style="width:${mein / alle.length * 100}%"></b></div></div>${serien}${mythAlbum(u)}</div>`);
+};
+// ---------- Mythen der Tiefe im Album ----------
+function mythAlbum(u) {
+  const ids = mythIds(), haben = ids.filter(i => mythBesitz(u)[i]).length;
+  return `<div class="serie myth"><h3><span style="color:${MYTH_RAR.farbe}">✦</span> ${MYTH_RAR.serie} <small class="mut" style="font:600 15px Inter">${haben}/${ids.length} · ${MYTH_RAR.name}</small></h3>
+    <p class="mut" style="font-size:14px;margin:-4px 0 10px">Sehr selten: in Muscheln (ab ${MYTH_CHANCE.ab} m Tauchtiefe) und in großen Überraschungspaketen. Nicht im Riff-Laden zu haben.</p><div class="figraster">${ids.map(i => mythKachel(u, i)).join('')}</div></div>`;
+}
+function mythKachel(u, id) {
+  const m = MYTH[id], b = mythBesitz(u)[id], st = `--rc:${MYTH_RAR.farbe};--mg:${m.glow}`;
+  if (!b) return `<button class="figkachel zu mythkachel" style="${st}" data-a="mythDetail" data-v="${id}"><div class="bild"><div style="filter:brightness(0) opacity(.18);height:100%">${mythSvg(id)}</div></div><div class="frage">?</div><div>???</div><div class="sterne"></div></button>`;
+  return `<button class="figkachel mythkachel ${b.neu ? 'neu' : ''}" style="${st}" data-a="mythDetail" data-v="${id}"><div class="bild">${mythSvg(id)}</div><div>${esc(m.name)}</div><div class="sterne"><span class="mythchip">${m.wesen ? 'Fabelwesen' : 'Gegenstand'}</span></div><div class="glanz"></div></button>`;
+}
+AKT.mythDetail = el => {
+  const u = cur(), id = el.dataset.v, m = MYTH[id], b = mythBesitz(u)[id], st = `--rc:${MYTH_RAR.farbe};--mg:${m.glow}`;
+  if (!b) { zeigeBlatt(`<div class="detail" style="${st}"><div class="gross"><div style="filter:brightness(0) opacity(.2);height:100%">${mythSvg(id)}</div></div><div style="flex:1;min-width:240px"><h2>Noch ein Geheimnis</h2><p class="mut" style="margin:8px 0">Das gehört zu den <b style="color:${MYTH_RAR.farbe}">Mythen der Tiefe</b>. Sie gibt es nicht im Riff-Laden und nicht bei den Freunden. Du findest sie sehr selten in Muscheln (ab ${MYTH_CHANCE.ab} m Tauchtiefe) und in großen Überraschungspaketen der Generalprobe.</p></div></div>`); return; }
+  if (b.neu) { b.neu = false; sichere(); }
+  zeigeBlatt(`<div class="detail mythdetail" style="${st}"><div class="gross">${mythSvg(id)}</div><div style="flex:1;min-width:250px"><span class="chip mythchip">${MYTH_RAR.name}</span> <span class="chip klein">${m.wesen ? 'Fabelwesen: schwimmt durchs Riff' : 'Gegenstand: leuchtet im Riff'}</span>
+    <h2 style="margin:8px 0 4px">${esc(m.name)}</h2><p class="mut" style="margin-bottom:10px">${esc(m.text)}</p>
+    <p class="mut" style="font-size:14px">${b.n}× gefunden${b.n > 1 ? ' · Doppelte geben Perlen und Korallenfunken' : ''}. Nachts leuchtet ${m.wesen ? 'es' : 'er'} im Riff besonders schön.</p>
+    <div class="zeile w" style="margin-top:14px"><button class="btn tuerkis klein" data-a="mythRiff" data-v="${id}">${ico('riff')} ${mythPlatziert(u, id) ? 'Aus dem Riff nehmen' : 'Ins Riff setzen'}</button></div></div></div>`);
+  render();
+};
+AKT.mythRiff = el => {
+  const u = cur(), id = el.dataset.v;
+  if (mythPlatziert(u, id)) { u.riff.items = u.riff.items.filter(i => !(i.kind === 'myth' && i.ref === id)); toast('Aus dem Riff genommen.', 'riff'); }
+  else { riffSetze('myth', id); toast(`${MYTH[id].name} leuchtet jetzt im Riff.`, 'riff'); }
+  sichere(); schliesseBlatt();
 };
 function figKachel(u, id) {
   const f = FIG[id], b = u.owned[id];
@@ -202,21 +258,23 @@ function riffSetze(kind, ref) {
   return it;
 }
 const STUFENGROESSE = [1, 1.08, 1.2];                             // entwickelte Freunde sind im Riff etwas größer
-const riffBasis = it => (it.kind === 'fig' ? 17 * STUFENGROESSE[stufeVon(cur(), it.ref) - 1] : 13) * it.s;     // Breite in Einheiten (Prozent einer Kachel)
+const riffBasis = it => (it.kind === 'fig' ? 17 * STUFENGROESSE[stufeVon(cur(), it.ref) - 1] : it.kind === 'myth' ? MYTH[it.ref].basis : 13) * it.s;     // Breite in Einheiten (Prozent einer Kachel)
 const riffLeft = (x, W) => `calc(${+(x - W.minX).toFixed(2)} * var(--u))`, riffTop = y => `calc(${+y.toFixed(2)} * var(--v))`;
 function riffItemHtml(it, W) {
   const sel = V.p.sel === it.id;
-  const svg = it.kind === 'fig' ? figSvg(it.ref) : dekoSvg(it.ref);
+  const myth = it.kind === 'myth' ? MYTH[it.ref] : null, svg = it.kind === 'fig' ? figSvg(it.ref) : myth ? mythSvg(it.ref) : dekoSvg(it.ref);
   const a = LEBEN.ag.get(it.id);
-  return `<div class="ritem ${it.kind} ${it.kind === 'deko' ? 'd-' + it.ref : ''} ${sel ? 'gew' : ''}" data-id="${it.id}" style="left:${riffLeft(it.x, W)};top:${riffTop(it.y)};width:calc(${riffBasis(it)} * var(--u));z-index:${Math.round((it.y + (a ? a.oy : 0)) * 10)};--dl:${(hashStr(it.id) % 30) / 10}s"><div class="swim"${a ? ` style="transform:${riffTransform(a)}"` : ''}><div class="dr"><div class="fl" style="transform:${it.flip ? 'scaleX(-1)' : 'none'}"><div class="fx">${svg}</div></div></div></div></div>`;
+  return `<div class="ritem ${it.kind} ${it.kind === 'deko' ? 'd-' + it.ref : ''} ${myth ? 'm-' + it.ref + (myth.wesen ? ' wesen' : '') : ''} ${sel ? 'gew' : ''}" data-id="${it.id}" style="${myth ? '--mg:' + myth.glow + ';' : ''}left:${riffLeft(it.x, W)};top:${riffTop(it.y)};width:calc(${riffBasis(it)} * var(--u));z-index:${Math.round((it.y + (a ? a.oy : 0)) * 10)};--dl:${(hashStr(it.id) % 30) / 10}s"><div class="swim"${a ? ` style="transform:${riffTransform(a)}"` : ''}><div class="dr"><div class="fl" style="transform:${it.flip ? 'scaleX(-1)' : 'none'}"><div class="fx">${svg}</div></div></div></div></div>`;
 }
 const werkzeugTop = it => clamp(riffSicht(it).y - riffBasis(it) * RIFF.ratio - 11, 2, riffWelt(cur()).h - 22);
 function lagerHtml(u) {
   const figs = figIds().filter(i => u.owned[i] && !figPlatziert(u, i));
   const dek = Object.keys(DEKO).filter(i => dekoFrei(u, i) > 0);
-  const n = figs.length + sum(dek.map(i => dekoFrei(u, i)));
+  const myths = mythIds().filter(i => mythBesitz(u)[i] && !mythPlatziert(u, i));
+  const n = figs.length + sum(dek.map(i => dekoFrei(u, i))) + myths.length;
   const kacheln = dek.map(i => `<button class="rtile ${u.dekoNeu && u.dekoNeu[i] ? 'neu' : ''}" data-a="riffNimm" data-k="deko" data-v="${i}" aria-label="${esc(DEKO[i].name)} aufstellen"><div class="b">${dekoSvg(i)}</div>${esc(DEKO[i].name)}${dekoFrei(u, i) > 1 ? `<span class="n">${dekoFrei(u, i)}</span>` : ''}</button>`).join('') +
-    figs.map(i => `<button class="rtile" data-a="riffNimm" data-k="fig" data-v="${i}" aria-label="${esc(FIG[i].name)} ins Riff setzen"><div class="b">${figSvg(i)}</div>${esc(FIG[i].name.split(' ').slice(-1)[0])}</button>`).join('');
+    figs.map(i => `<button class="rtile" data-a="riffNimm" data-k="fig" data-v="${i}" aria-label="${esc(FIG[i].name)} ins Riff setzen"><div class="b">${figSvg(i)}</div>${esc(FIG[i].name.split(' ').slice(-1)[0])}</button>`).join('') +
+    myths.map(i => `<button class="rtile mythtile" style="--mg:${MYTH[i].glow}" data-a="riffNimm" data-k="myth" data-v="${i}" aria-label="${esc(MYTH[i].name)} ins Riff setzen"><div class="b">${mythSvg(i)}</div>${esc(MYTH[i].name.split(' ').slice(-1)[0])}</button>`).join('');
   return `<div class="lager"><div class="lagerkopf"><b class="fred">Lager</b><span class="mut">${n ? `${n} ${n === 1 ? 'Stück wartet' : 'Stücke warten'} – tipp eins an, dann steht es im Riff` : 'leer'}</span></div>
     <div class="ablage-riff">${kacheln || `<div class="lagerleer">Hier landen Tiere aus Muscheln und gekaufte Deko. <button class="linkbtn" data-a="laden">Zum Riff-Laden</button></div>`}</div></div>`;
 }
@@ -231,7 +289,7 @@ ANSICHT.riff = () => {
   const sterne = bgId === 'nacht' ? `<div class="hg" style="height:${100 / W.rows}%;background-size:${100 / W.cols}% 100%;background-image:radial-gradient(circle at 18% 22%,#fff 0 1.5px,transparent 2px),radial-gradient(circle at 72% 14%,#fff 0 2px,transparent 2.5px),radial-gradient(circle at 44% 32%,#BDF 0 1.5px,transparent 2px),radial-gradient(circle at 88% 40%,#fff 0 1.5px,transparent 2px),radial-gradient(circle at 30% 8%,#fff 0 1px,transparent 1.5px)"></div>` : '';
   const leer = items.length ? '' : `<div class="riffleer" style="left:${riffLeft(0, W)};width:calc(100 * var(--u))">Dein Riff ist noch leer.<br>Tipp unten im Lager auf ein Tier oder ein Stück Deko.</div>`;
   return mitNav(`<div class="riff-seite">${kopfLeiste()}<div class="riffkopf"><h1>Mein Riff</h1><span class="sp1"></span>${gross ? `<button class="btn weiss klein" data-a="riffAlles">${RIFF.alles ? 'Zoomen' : 'Übersicht'}</button>` : ''}<button class="btn blau klein" data-a="riffWeiter">Erweitern</button><button class="btn gold klein" data-a="laden">${PERLE} Riff-Laden</button><button class="btn weiss klein" data-a="riffHg">Hintergrund</button></div>
-    <div class="riffrahmen"><div class="riffwrap ${RIFF.alles ? 'alles' : ''}" id="riffwrap"><div class="riffbuehne" id="buehne" style="--cols:${W.cols};--rows:${W.rows}"><div class="hg" style="background:${riffWasser(W.rows, c)}"></div><div class="strahl"></div>${sterne}<div class="nachthaut"></div>
+    <div class="riffrahmen"><div class="riffwrap ${RIFF.alles ? 'alles' : ''}" id="riffwrap"><div class="riffbuehne ${u.riff.sperre ? 'gesperrt' : ''}" id="buehne" style="--cols:${W.cols};--rows:${W.rows}"><div class="hg" style="background:${riffWasser(W.rows, c)}"></div><div class="strahl"></div><div class="oberflaeche"></div>${sterne}<div class="nachthaut"></div>
     ${riffZonenHtml(W)}<div class="sand" style="--sand1:${sand[0]};--sand2:${sand[1]}"></div>${items.map(i => riffItemHtml(i, W)).join('')}${leer}<div class="teile" id="teile"></div>
     ${sel ? `<div class="werkzeug" id="werkzeug" style="left:${riffLeft(clamp(riffSicht(sel).x, W.minX + 14, W.minX + W.w - 14), W)};top:${riffTop(werkzeugTop(sel))}"><button data-a="riffKlein" aria-label="Kleiner">−</button><button data-a="riffGross" aria-label="Größer">+</button><button data-a="riffSpiegel" aria-label="Spiegeln">${ico('tausch')}</button><button class="rot" data-a="riffWeg" aria-label="Zurück ins Lager">${ico('muelleimer')}</button></div>` : ''}</div></div>${riffWerkHtml(u)}</div>
     ${lagerHtml(u)}</div>`, 'fest');
@@ -277,7 +335,7 @@ function riffNach() {
     drag.raf = requestAnimationFrame(lauf);
   };
   b.addEventListener('pointerdown', e => {
-    if (e.target.closest('.werkzeug')) return;
+    if (e.target.closest('.werkzeug, .fragezeichen')) return;
     const el = e.target.closest('.ritem');
     if (!el) {                                                    // leeres Wasser: Touch scrollt von selbst, mit der Maus ziehen wir die Ansicht
       if (LEBEN.futterModus) { lebenFutterStreuen(pos(e)); return; }
@@ -309,12 +367,13 @@ function riffNach() {
     const d = drag; drag = null; cancelAnimationFrame(d.raf); LEBEN.zieht = null;
     if (d.moved) { sichere(); TON.spiel('tap'); }
     V.p.sel = d.it.id; render();
-    if (!d.moved && d.it.kind === 'fig') lebenGruss(d.it);
+    if (!d.moved && lebenBeweglich(d.it)) lebenGruss(d.it);
   };
   b.addEventListener('pointerup', ende); b.addEventListener('pointercancel', ende);
   b.addEventListener('click', e => {                              // Klick ins leere Wasser: Auswahl aufheben (ein Scrollen mit dem Finger löst keinen Klick aus)
     if (nachKlick) { nachKlick = false; return; }
-    if (!e.target.closest('.ritem, .werkzeug') && V.p.sel) { V.p.sel = null; render(); }
+    if (!e.target.closest('.ritem, .werkzeug, .fragezeichen') && !LEBEN.futterModus && !V.p.sel) lebenLocken(pos(e));      // Tipp ins Wasser: Ringwelle, die nächsten Freunde schauen vorbei
+    if (!e.target.closest('.ritem, .werkzeug, .fragezeichen') && V.p.sel) { V.p.sel = null; render(); }
   });
   lebenStart();
 }
